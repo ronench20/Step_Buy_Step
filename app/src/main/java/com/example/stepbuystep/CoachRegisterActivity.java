@@ -22,6 +22,7 @@ public class CoachRegisterActivity extends ComponentActivity {
 
     private EditText etEmail, etPassword;
     private Button btnRegister;
+    /// //
 
     private final Random random = new Random();
 
