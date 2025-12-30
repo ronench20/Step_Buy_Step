@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Step Buy Step Brand Colors -->
+    <color name="brand_blue">#007AFF</color>
+    <color name="brand_blue_dark">#0051D5</color>
+    <color name="brand_green">#34C759</color>
+    <color name="brand_red">#FF3B30</color>
+
+    <color name="background_light">#F3F3F5</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="text_primary">#030213</color>
+    <color name="text_secondary">#717182</color>
+    <color name="divider">#ECECF0</color>
+
+    <color name="blue_50">#EFF6FF</color>
+    <color name="gray_100">#F3F4F6</color>
+    <color name="gray_400">#9CA3AF</color>
+</resources>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "708121407268",
+    "project_id": "step-but-step",
+    "storage_bucket": "step-but-step.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708121407268:android:4a88b3bcb3e09e1719cdb1",
+        "android_client_info": {
+          "package_name": "com.example.stepbuystep"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708121407268-qjam7km9itr46r6bk2gono70o24usfh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIuPX1vmJpNgq-vbl-MmHKy5hAzH8jdH0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708121407268-qjam7km9itr46r6bk2gono70o24usfh5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
