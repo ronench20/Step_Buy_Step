@@ -478,7 +478,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:text="Upcoming Workouts"
+                android:text="Coach Schedualed Workouts"
                 android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -511,16 +511,18 @@
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation Bar -->
     <LinearLayout
+        android:id="@+id/bottomNavigationBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:background="@color/white"
-        android:elevation="16dp"
+        android:elevation="8dp"
         android:orientation="horizontal"
         android:paddingVertical="8dp">
 
-        <!-- Dashboard (Selected) -->
+        <!-- Dashboard -->
         <LinearLayout
             android:id="@+id/navDashboard"
             android:layout_width="0dp"
@@ -529,22 +531,28 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_home"
-                app:tint="@color/brand_blue" />
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Dashboard"
-                android:textColor="@color/brand_blue"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <!-- History -->
@@ -556,13 +564,20 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_history"
-                app:tint="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_history"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -570,7 +585,7 @@
                 android:layout_marginTop="4dp"
                 android:text="History"
                 android:textColor="@color/text_secondary"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <!-- Shoe Store -->
@@ -582,13 +597,20 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_store"
-                app:tint="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_store"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -596,7 +618,7 @@
                 android:layout_marginTop="4dp"
                 android:text="Shoe Store"
                 android:textColor="@color/text_secondary"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <!-- Leaderboard -->
@@ -608,13 +630,20 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_leaderboard"
-                app:tint="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_leaderboard"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -622,8 +651,8 @@
                 android:layout_marginTop="4dp"
                 android:text="Leaderboard"
                 android:textColor="@color/text_secondary"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
-    </LinearLayout>
 
+    </LinearLayout>
 </LinearLayout>

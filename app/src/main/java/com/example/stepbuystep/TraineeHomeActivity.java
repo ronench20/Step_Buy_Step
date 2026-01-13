@@ -27,13 +27,12 @@ import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraineeHomeActivity extends AppCompatActivity {
+public class TraineeHomeActivity extends BaseTraineeActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
     private TextView tvUserName, tvShoeCount, tvCurrentShoeName, tvCurrentShoeLevel, tvMultiplier, tvCoachScheduledBadge, tvNotificationBadge;
     private CardView btnCategoryRunning, btnCategoryWalking, btnCoachScheduled;
-    private LinearLayout navDashboard, navHistory, navShoeStore, navLeaderboard;
     private LinearLayout btnLogout;
     private RecyclerView rvWorkouts;
     private WorkoutAdapter workoutAdapter;
@@ -51,6 +50,7 @@ public class TraineeHomeActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         initViews();
+        setupNavigationBar(NavItem.DASHBOARD);
         setupListeners();
         loadUserData();
         fetchUnreadMessageCount();
@@ -65,11 +65,6 @@ public class TraineeHomeActivity extends AppCompatActivity {
 
         btnCategoryRunning = findViewById(R.id. btnCategoryRunning);
         btnCategoryWalking = findViewById(R.id.btnCategoryWalking);
-
-        navDashboard = findViewById(R.id.navDashboard);
-        navHistory = findViewById(R.id.navHistory);
-        navShoeStore = findViewById(R.id.navShoeStore);
-        navLeaderboard = findViewById(R.id. navLeaderboard);
 
         btnLogout = findViewById(R.id.btnLogout);
 
@@ -104,22 +99,6 @@ public class TraineeHomeActivity extends AppCompatActivity {
         btnCategoryWalking.setOnClickListener(v -> startTrackingActivity("walk"));
 
         btnCoachScheduled.setOnClickListener(v -> showUpcomingWorkoutsDialog());
-        // Bottom Navigation
-        navShoeStore.setOnClickListener(v -> startActivity(new Intent(this, ShopActivity.class)));
-
-        navLeaderboard.setOnClickListener(v -> {
-            // Assuming GroupListActivity serves as the leaderboard/group view for trainees too
-            // If not, we might need a separate TraineeLeaderboardActivity
-            // For now, let's use GroupListActivity or a Toast if strictly restricted
-            // Previous spec said "Trainees can see a list of all members under their coach."
-            startActivity(new Intent(this, LeaderBoardActivity.class));
-        });
-
-        navHistory.setOnClickListener(v -> startActivity(new Intent(this, HistoryTraineeActivity.class)));
-
-        navDashboard.setOnClickListener(v -> {
-            // Already here
-        });
 
         // Notifications
         btnNotifications.setOnClickListener(v -> openMessagesScreen());

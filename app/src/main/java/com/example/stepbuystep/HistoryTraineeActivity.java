@@ -25,8 +25,7 @@ import java. util.Calendar;
 import java.util.Date;
 import java.util. Locale;
 
-public class HistoryTraineeActivity extends AppCompatActivity {
-
+public class HistoryTraineeActivity extends BaseTraineeActivity {
     private LinearLayout btnBack;
     private TextView tvTotalWorkouts, tvTotalDistance;
     private TextView tvTotalCalories, tvTotalPoints;
@@ -46,6 +45,7 @@ public class HistoryTraineeActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         initViews();
+        setupNavigationBar(NavItem. HISTORY);
         setupRecyclerView();
         fetchHistory();
     }

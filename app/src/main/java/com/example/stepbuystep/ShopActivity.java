@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ShopActivity extends ComponentActivity {
+public class ShopActivity extends BaseTraineeActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -30,11 +30,7 @@ public class ShopActivity extends ComponentActivity {
     private TextView tvCoinBalance;
     private TextView tvCurrentShoeName, tvCurrentShoeLevel, tvCurrentMultiplier;
     private RecyclerView rvShoes;
-    private View btnBack; // Can be LinearLayout or View
-
-    // Bottom Nav
-    private LinearLayout navDashboard, navHistory, navLeaderboard;
-
+    private View btnBack;
     private long currentCoins = 0;
     private Map<String, Integer> currentInventoryTiers = new HashMap<>();
     private List<Equipment> availableUpgrades = new ArrayList<>();
@@ -51,6 +47,7 @@ public class ShopActivity extends ComponentActivity {
         initViews();
         setupRecyclerView();
         setupListeners();
+        setupNavigationBar(NavItem.SHOE_STORE);
         loadUserData();
     }
 
@@ -62,9 +59,6 @@ public class ShopActivity extends ComponentActivity {
         rvShoes = findViewById(R.id.rvShoes);
         btnBack = findViewById(R.id.btnBack);
 
-        navDashboard = findViewById(R.id.navDashboard);
-        navHistory = findViewById(R.id.navHistory);
-        navLeaderboard = findViewById(R.id.navLeaderboard);
     }
 
     private void setupRecyclerView() {
@@ -76,19 +70,6 @@ public class ShopActivity extends ComponentActivity {
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
-
-        navDashboard.setOnClickListener(v -> {
-            startActivity(new Intent(this, TraineeHomeActivity.class));
-            finish();
-        });
-
-        navHistory.setOnClickListener(v ->
-                startActivity(new Intent(this, HistoryTraineeActivity.class))
-        );
-
-        navLeaderboard.setOnClickListener(v ->
-                startActivity(new Intent(this, LeaderBoardActivity.class))
-        );
     }
 
     private void loadUserData() {

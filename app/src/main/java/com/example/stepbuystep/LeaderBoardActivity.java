@@ -2,10 +2,14 @@ package com.example.stepbuystep;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.ComponentActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LeaderBoardActivity extends ComponentActivity {
+public class LeaderBoardActivity extends AppCompatActivity{
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -30,6 +34,8 @@ public class LeaderBoardActivity extends ComponentActivity {
     private LeaderboardAdapter adapter;
     private View btnBack;
     private String currentUserRole = "";
+    private LinearLayout bottomNavigationBar;
+    private LinearLayout navDashboard, navHistory, navShoeStore, navLeaderboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +51,19 @@ public class LeaderBoardActivity extends ComponentActivity {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> finish());
         }
+        initNavigationViews();
+
 
         setupRecyclerView();
         loadUserData();
+    }
+
+    private void initNavigationViews() {
+        bottomNavigationBar = findViewById(R.id.bottomNavigationBar);
+        navDashboard = findViewById(R.id.navDashboard);
+        navHistory = findViewById(R.id.navHistory);
+        navShoeStore = findViewById(R.id.navShoeStore);
+        navLeaderboard = findViewById(R.id.navLeaderboard);
     }
 
     private void setupRecyclerView() {
@@ -72,6 +88,9 @@ public class LeaderBoardActivity extends ComponentActivity {
                 Long coachId = doc.getLong("coachID");
                 currentUserRole = doc.getString("role");
 
+                setupNavigationBasedOnRole(currentUserRole);
+
+
                 if (coachId != null) {
                     fetchTrainees(coachId);
                 } else if ("coach".equals(currentUserRole)) {
@@ -79,6 +98,141 @@ public class LeaderBoardActivity extends ComponentActivity {
                 }
             }
         }).addOnFailureListener(e -> Toast.makeText(this, "Error loading profile", Toast.LENGTH_SHORT).show());
+    }
+
+    private void setupNavigationBasedOnRole(String role) {
+        if (bottomNavigationBar == null) return;
+
+        if ("trainee".equals(role)) {
+            // Show navigation bar for trainees
+            bottomNavigationBar.setVisibility(View.VISIBLE);
+            setupTraineeNavigation();
+        } else {
+            // Hide navigation bar for coaches
+            bottomNavigationBar.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupTraineeNavigation() {
+        if (navDashboard != null) {
+            navDashboard.setOnClickListener(v -> navigateToTraineePage("dashboard"));
+        }
+        if (navHistory != null) {
+            navHistory.setOnClickListener(v -> navigateToTraineePage("history"));
+        }
+        if (navShoeStore != null) {
+            navShoeStore.setOnClickListener(v -> navigateToTraineePage("shop"));
+        }
+        if (navLeaderboard != null) {
+            navLeaderboard.setOnClickListener(v -> {
+                // Already on leaderboard - do nothing or scroll to top
+            });
+        }
+
+        // Highlight the current page (Leaderboard)
+        highlightNavigationItem("leaderboard");
+    }
+
+    private void navigateToTraineePage(String page) {
+        android.content.Intent intent = null;
+
+        switch (page) {
+            case "dashboard":
+                intent = new android.content.Intent(this, TraineeHomeActivity.class);
+                break;
+            case "history":
+                intent = new android. content.Intent(this, HistoryTraineeActivity.class);
+                break;
+            case "shop":
+                intent = new android.content.Intent(this, ShopActivity.class);
+                break;
+        }
+
+        if (intent != null) {
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    private void highlightNavigationItem(String currentPage) {
+        // Reset all nav items to default state
+        if (navDashboard != null) resetNavItem(navDashboard);
+        if (navHistory != null) resetNavItem(navHistory);
+        if (navShoeStore != null) resetNavItem(navShoeStore);
+        if (navLeaderboard != null) resetNavItem(navLeaderboard);
+
+        // Highlight the current page
+        LinearLayout activeNav = null;
+        if ("leaderboard".equals(currentPage)) {
+            activeNav = navLeaderboard;
+        }
+
+        if (activeNav != null) {
+            setNavItemActive(activeNav);
+        }
+    }
+
+    private void resetNavItem(LinearLayout navItem) {
+        ImageView icon = null;
+        TextView label = null;
+        LinearLayout backgroundContainer = null;
+
+        for (int i = 0; i < navItem.getChildCount(); i++) {
+            View child = navItem.getChildAt(i);
+            if (child instanceof ImageView) {
+                icon = (ImageView) child;
+            } else if (child instanceof TextView) {
+                label = (TextView) child;
+            } else if (child instanceof LinearLayout) {
+                backgroundContainer = (LinearLayout) child;
+                backgroundContainer.setBackgroundResource(0);
+                for (int j = 0; j < backgroundContainer.getChildCount(); j++) {
+                    if (backgroundContainer.getChildAt(j) instanceof ImageView) {
+                        icon = (ImageView) backgroundContainer.getChildAt(j);
+                    }
+                }
+            }
+        }
+
+        if (icon != null) {
+            icon.setColorFilter(ContextCompat.getColor(this, R. color.text_secondary));
+        }
+        if (label != null) {
+            label.setTextColor(ContextCompat.getColor(this, R. color.text_secondary));
+            label.setTypeface(null, android.graphics.Typeface. NORMAL);
+        }
+    }
+
+    private void setNavItemActive(LinearLayout navItem) {
+        ImageView icon = null;
+        TextView label = null;
+        LinearLayout backgroundContainer = null;
+
+        for (int i = 0; i < navItem.getChildCount(); i++) {
+            View child = navItem.getChildAt(i);
+            if (child instanceof ImageView) {
+                icon = (ImageView) child;
+            } else if (child instanceof TextView) {
+                label = (TextView) child;
+            } else if (child instanceof LinearLayout) {
+                backgroundContainer = (LinearLayout) child;
+                backgroundContainer.setBackgroundResource(R.drawable.ic_launcher_background);
+                backgroundContainer.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.blue_50));
+                for (int j = 0; j < backgroundContainer. getChildCount(); j++) {
+                    if (backgroundContainer.getChildAt(j) instanceof ImageView) {
+                        icon = (ImageView) backgroundContainer.getChildAt(j);
+                    }
+                }
+            }
+        }
+
+        if (icon != null) {
+            icon.setColorFilter(ContextCompat.getColor(this, R.color. brand_blue));
+        }
+        if (label != null) {
+            label.setTextColor(ContextCompat.getColor(this, R.color.brand_blue));
+            label.setTypeface(null, android.graphics.Typeface.BOLD);
+        }
     }
 
     private void fetchTrainees(Long coachId) {
