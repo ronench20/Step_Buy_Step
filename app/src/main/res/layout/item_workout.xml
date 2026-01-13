@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/ic_launcher_background"
+    android:backgroundTint="@color/gray_100"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvWorkoutType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Group Session"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary" />
+
+    <TextView
+        android:id="@+id/tvWorkoutDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="25/12/2024 at 10:00"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvWorkoutLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Central Park"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginTop="2dp" />
+
+</LinearLayout>

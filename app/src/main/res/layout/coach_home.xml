@@ -1,413 +1,370 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
-    android:orientation="vertical">
+    android:background="#F7F7F9">
 
-    <!-- Top Navigation Bar -->
-    <LinearLayout
+    <!-- Main Content -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_nav">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Step Buy Step"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Coach Portal"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_logout"
-                app:tint="@color/brand_red" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text="Logout"
-                android:textColor="@color/brand_red"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Content Scrollable Area -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-            <!-- Blue Dashboard Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/brand_blue"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:orientation="vertical">
 
+                <!-- Header (gradient) -->
                 <LinearLayout
+                    android:id="@+id/header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="top">
+                    android:padding="24dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_header_gradient">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvTitle"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:text="Coach Dashboard"
-                            android:textColor="@color/white"
-                            android:textSize="22sp"
+                            android:textColor="@android:color/white"
+                            android:textSize="24sp"
                             android:textStyle="bold" />
 
-                        <TextView
+                        <!-- Logout Button (Top Right) -->
+                        <LinearLayout
+                            android:id="@+id/btnLogout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Manage your team"
-                            android:textColor="#CCFFFFFF"
-                            android:textSize="14sp" />
+                            android:padding="8dp"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                app:srcCompat="@drawable/ic_logout"
+                                app:tint="@android:color/white" />
+                        </LinearLayout>
+
                     </LinearLayout>
 
+                    <!-- ID Pill + Subtitle Row -->
                     <LinearLayout
-                        android:id="@+id/btnCopyId"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/ic_launcher_background"
-                        android:backgroundTint="#33FFFFFF"
+                        android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
-                        android:clickable="true"
-                        android:focusable="true">
+                        android:layout_marginTop="4dp">
 
-                        <TextView
-                            android:id="@+id/tvCoachId"
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvSubtitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Manage your team"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- "ID: XXXXXX" pill -->
+                        <LinearLayout
+                            android:id="@+id/btnCopyCoachId"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="ID: ..."
-                            android:textColor="@color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:paddingTop="6dp"
+                            android:paddingBottom="6dp"
+                            android:background="@drawable/bg_id_pill"
+                            android:clickable="true"
+                            android:focusable="true">
 
-                        <ImageView
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:layout_marginStart="8dp"
-                            android:src="@drawable/ic_copy"
-                            app:tint="@color/white" />
+                            <TextView
+                                android:id="@+id/tvCoachIdShort"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ID: ..."
+                                android:textColor="@android:color/white"
+                                android:textSize="13sp" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginStart="8dp"
+                                app:srcCompat="@drawable/ic_copy"
+                                app:tint="@android:color/white" />
+                        </LinearLayout>
                     </LinearLayout>
+
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- Stats Cards -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:clipToPadding="false">
-
-                <!-- Active Athletes Card -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="24dp">
-
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="@drawable/ic_launcher_background"
-                            android:backgroundTint="@color/blue_50"
-                            android:padding="6dp"
-                            android:src="@drawable/ic_people"
-                            app:tint="@color/brand_blue" />
-
-                        <TextView
-                            android:id="@+id/tvActiveAthletesCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="0"
-                            android:textColor="@color/text_primary"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Active Athletes"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Pending Requests Card -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="24dp">
-
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="@drawable/ic_launcher_background"
-                            android:backgroundTint="#F0FDF4"
-                            android:padding="6dp"
-                            android:src="@drawable/ic_trending_up"
-                            app:tint="@color/brand_green" />
-
-                        <TextView
-                            android:id="@+id/tvPendingRequestsCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="0"
-                            android:textColor="@color/text_primary"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pending Requests"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
-
-            <!-- Upcoming Workouts Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="16dp">
-
+                <!-- Content padding -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Upcoming workouts"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvUpcomingCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
-                        android:background="@drawable/ic_launcher_background"
-                        android:backgroundTint="@color/background_light"
-                        android:paddingHorizontal="6dp"
-                        android:paddingVertical="2dp"/>
-
-                </LinearLayout>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="1dp"
-                    app:cardBackgroundColor="@color/white">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="24dp">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                        <ImageView
+                        <!-- KPI 1 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:padding="16dp"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="@drawable/bg_card">
+
+                            <LinearLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_icon_chip_blue">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    app:srcCompat="@drawable/ic_users"
+                                    app:tint="@color/primary_blue" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvActiveAthletesCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="0"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="#111111" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Active Athletes"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_muted" />
+                        </LinearLayout>
+
+                        <!-- KPI 2 -->
+                        <LinearLayout
+                            android:id="@+id/cardPendingRequests"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:padding="16dp"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="@drawable/bg_card"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <LinearLayout
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_icon_chip_green">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    app:srcCompat="@drawable/ic_trending_up"
+                                    app:tint="@color/success_green" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvPendingRequestsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="0"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="#111111" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Pending Requests"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_muted" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp" />
+
+                    <!-- Upcoming workouts header -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Upcoming workouts"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#111111" />
+
+                        <TextView
+                            android:id="@+id/badgeUpcomingCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:minHeight="24dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textSize="12sp"
+                            android:textColor="#111111"
+                            android:background="@drawable/bg_badge_outline" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="12dp" />
+
+                    <!-- Empty state card -->
+                    <LinearLayout
+                        android:id="@+id/cardNoUpcoming"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="24dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_card"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:src="@drawable/ic_calendar"
-                            app:tint="@color/gray_400" />
+                            app:srcCompat="@drawable/ic_calendar"
+                            app:tint="@color/text_muted"
+                            android:alpha="0.5" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="8dp"
                             android:text="No upcoming workouts"
-                            android:textColor="@color/text_secondary"
+                            android:textColor="@color/text_muted"
                             android:textSize="14sp" />
 
-                         <TextView
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Create a new workout to get started"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                            android:textColor="@color/text_muted"
+                            android:textSize="13sp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
 
-            <!-- Broadcast Button -->
-            <Button
-                android:id="@+id/btnBroadcastMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="16dp"
-                android:backgroundTint="@color/brand_blue"
-                android:drawableStart="@drawable/ic_message"
-                android:drawableTint="@color/white"
-                android:paddingVertical="12dp"
-                android:text="Broadcast Message"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                app:cornerRadius="8dp" />
-
-             <!-- Your Athletes Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="16dp"
-                android:layout_marginBottom="24dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Your Athletes"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="1dp"
-                    app:cardBackgroundColor="@color/white">
-
-                    <LinearLayout
+                    <!-- Upcoming workouts list -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvUpcoming"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:visibility="visible" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp" />
+
+                    <!-- Broadcast button -->
+                    <LinearLayout
+                        android:id="@+id/btnBroadcastMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
                         android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="24dp">
+                        android:background="@drawable/bg_button_blue"
+                        android:clickable="true"
+                        android:focusable="true">
 
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/ic_people"
-                            app:tint="@color/gray_400" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:srcCompat="@drawable/ic_send"
+                            app:tint="@android:color/white" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="No athletes yet"
-                            android:textColor="@color/text_secondary"
+                            android:layout_marginStart="10dp"
+                            android:text="Broadcast Message"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
                             android:textSize="14sp" />
-
-                        <TextView
-                            android:id="@+id/tvJoinInstructions"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Athletes can join using your Coach ID"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp"
-                            android:gravity="center"/>
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
 
-        </LinearLayout>
-    </ScrollView>
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- Bottom Navigation -->
     <LinearLayout
+        android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:elevation="8dp"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:paddingVertical="8dp">
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
-        <!-- My Athletes (Selected) -->
+        <!-- My Athletes -->
         <LinearLayout
-            android:id="@+id/navMyAthletes"
+            android:id="@+id/navDashboardCoach"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -416,29 +373,22 @@
             android:clickable="true"
             android:focusable="true">
 
-            <LinearLayout
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:background="@drawable/ic_launcher_background"
-                 android:backgroundTint="@color/blue_50"
-                 android:paddingHorizontal="20dp"
-                 android:paddingVertical="4dp">
 
-                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_people"
-                    app:tint="@color/brand_blue" />
-            </LinearLayout>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_home"
+                app:tint="@color/text_secondary" />
+
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="My Athletes"
-                android:textColor="@color/brand_blue"
-                android:textSize="10sp"
-                android:textStyle="bold"/>
+                android:text="Dashboard"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <!-- My History -->
@@ -452,11 +402,20 @@
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_history"
-                app:tint="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_history"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -478,11 +437,20 @@
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_add"
-                app:tint="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_add"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -504,11 +472,20 @@
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_settings"
-                app:tint="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -518,5 +495,7 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
+
     </LinearLayout>
-</LinearLayout>
+
+</RelativeLayout>

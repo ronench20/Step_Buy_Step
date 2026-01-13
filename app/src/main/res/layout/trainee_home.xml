@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background_light">
+    android:background="@color/background_light"
+    android:orientation="vertical">
 
     <!-- Header Gradient Area -->
     <LinearLayout
@@ -22,7 +22,7 @@
             android:padding="16dp"
             android:gravity="center_vertical">
 
-             <LinearLayout
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -43,6 +43,37 @@
                     android:textColor="#CCFFFFFF"
                     android:textSize="12sp" />
             </LinearLayout>
+
+            <!-- Notification Icon with Badge -->
+            <FrameLayout
+                android:id="@+id/btnNotifications"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_bell"
+                    app:tint="@color/white" />
+
+                <!-- Notification Badge -->
+                <TextView
+                    android:id="@+id/tvNotificationBadge"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="top|end"
+                    android:background="@drawable/badge_circle"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/btnLogout"
@@ -74,9 +105,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="24dp"
-            android:gravity="center_vertical">
+            android:padding="24dp">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -89,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:text="Welcome back,"
                     android:textColor="#CCFFFFFF"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/tvUserName"
@@ -98,36 +129,36 @@
                     android:text="Trainee"
                     android:textColor="@color/white"
                     android:textSize="28sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="end">
+                android:gravity="end"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="24dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_shoe"
-                        app:tint="@color/white"/>
+                        app:tint="@color/white" />
 
                     <TextView
                         android:id="@+id/tvShoeCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:text="0"
                         android:textColor="@color/white"
                         android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:layout_marginStart="8dp"/>
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
@@ -135,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:text="Point Amount"
                     android:textColor="#CCFFFFFF"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -155,16 +186,16 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/white">
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="20dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="48dp"
@@ -172,18 +203,19 @@
                         android:background="@drawable/ic_launcher_background"
                         android:backgroundTint="@color/blue_50"
                         android:gravity="center">
+
                         <ImageView
-                             android:layout_width="24dp"
-                             android:layout_height="24dp"
-                             android:src="@drawable/ic_walking"
-                             app:tint="@color/brand_blue"/>
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_walking"
+                            app:tint="@color/brand_blue" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginStart="16dp"
+                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <TextView
@@ -191,9 +223,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Basic Runner"
+                            android:textColor="@color/text_primary"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvCurrentShoeLevel"
@@ -201,90 +233,50 @@
                             android:layout_height="wrap_content"
                             android:text="Level 1"
                             android:textColor="@color/text_secondary"
-                            android:textSize="14sp"/>
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="end">
+                        android:gravity="end"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/tvMultiplier"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1x"
                             android:background="@drawable/ic_launcher_background"
                             android:backgroundTint="@color/brand_green"
-                            android:textColor="@color/white"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
+                            android:text="1x"
+                            android:textColor="@color/white"
                             android:textSize="12sp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="Multiplier"
                             android:textColor="@color/text_secondary"
-                            android:textSize="10sp"
-                            android:layout_marginTop="2dp"/>
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Upcoming Workouts -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upcoming Workouts"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp"/>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:cardBackgroundColor="@color/white">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="24dp">
-
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_calendar"
-                        app:tint="@color/gray_400" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="No upcoming workouts scheduled"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
 
             <!-- Training Categories -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Training Categories"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="12dp"
+                android:text="Training Categories"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -295,14 +287,14 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/btnCategoryRunning"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="1dp"
-                    app:cardBackgroundColor="@color/white"
+                    android:layout_weight="1"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -311,32 +303,34 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                         <LinearLayout
-                             android:layout_width="40dp"
-                             android:layout_height="40dp"
-                             android:background="@drawable/ic_launcher_background"
-                             android:backgroundTint="@color/blue_50"
-                             android:gravity="center">
-                             <ImageView
-                                 android:layout_width="20dp"
-                                 android:layout_height="20dp"
-                                 android:src="@drawable/ic_running"
-                                 app:tint="@color/brand_blue"/>
-                         </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/ic_launcher_background"
+                            android:backgroundTint="@color/blue_50"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_running"
+                                app:tint="@color/brand_blue" />
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:text="Running"
-                            android:textStyle="bold"
                             android:textColor="@color/text_primary"
-                            android:layout_marginTop="8dp"/>
+                            android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="1x"
                             android:textColor="@color/text_secondary"
-                            android:textSize="12sp"/>
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -344,101 +338,158 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/btnCategoryWalking"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="4dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="1dp"
-                    app:cardBackgroundColor="@color/white"
+                    android:layout_weight="1"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="1dp">
 
-                     <LinearLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                         <LinearLayout
-                             android:layout_width="40dp"
-                             android:layout_height="40dp"
-                             android:background="@drawable/ic_launcher_background"
-                             android:backgroundTint="#F0FDF4"
-                             android:gravity="center">
-                             <ImageView
-                                 android:layout_width="20dp"
-                                 android:layout_height="20dp"
-                                 android:src="@drawable/ic_walking"
-                                 app:tint="@color/brand_green"/>
-                         </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/ic_launcher_background"
+                            android:backgroundTint="#F0FDF4"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_walking"
+                                app:tint="@color/brand_green" />
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:text="Walking"
-                            android:textStyle="bold"
                             android:textColor="@color/text_primary"
-                            android:layout_marginTop="8dp"/>
+                            android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="1x"
                             android:textColor="@color/text_secondary"
-                            android:textSize="12sp"/>
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                 <!-- Coach Scheduled (Placeholder) -->
+                <!-- Coach Scheduled (Placeholder) -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:alpha="0.5"
+                    app:cardBackgroundColor="@color/background_light"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/background_light"
-                    app:cardPreventCornerOverlap="false"
-                    android:alpha="0.5">
+                    app:cardPreventCornerOverlap="false">
 
-                     <LinearLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                         <LinearLayout
-                             android:layout_width="40dp"
-                             android:layout_height="40dp"
-                             android:background="@drawable/ic_launcher_background"
-                             android:backgroundTint="@color/gray_100"
-                             android:gravity="center">
-                             <ImageView
-                                 android:layout_width="20dp"
-                                 android:layout_height="20dp"
-                                 android:src="@drawable/ic_leaderboard"
-                                 app:tint="@color/gray_400"/>
-                         </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/ic_launcher_background"
+                            android:backgroundTint="@color/gray_100"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_leaderboard"
+                                app:tint="@color/gray_400" />
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:text="Coach"
-                            android:textColor="@color/text_secondary"
-                            android:layout_marginTop="8dp"/>
+                            android:textColor="@color/text_secondary" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Scheduled"
                             android:textColor="@color/text_secondary"
-                            android:textSize="10sp"/>
+                            android:textSize="10sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
+
+    <!-- Add this card after the current shoe info and before the bottom navigation -->
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="Upcoming Workouts"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvWorkouts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <!-- Empty state -->
+            <LinearLayout
+                android:id="@+id/emptyStateWorkouts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No upcoming workouts"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <!-- Bottom Navigation -->
     <LinearLayout
@@ -455,25 +506,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <LinearLayout
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:background="@drawable/ic_launcher_background"
-                 android:backgroundTint="@color/blue_50"
-                 android:paddingHorizontal="20dp"
-                 android:paddingVertical="4dp">
-
-                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_home"
-                    app:tint="@color/brand_blue" />
-            </LinearLayout>
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_home"
+                app:tint="@color/brand_blue" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -482,7 +524,7 @@
                 android:text="Dashboard"
                 android:textColor="@color/brand_blue"
                 android:textSize="10sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- History -->
@@ -491,10 +533,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:layout_width="24dp"
@@ -517,10 +559,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:layout_width="24dp"
@@ -543,10 +585,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:layout_width="24dp"

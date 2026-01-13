@@ -160,11 +160,11 @@ public class TrackingActivity extends ComponentActivity {
                     double maxMult = currentMultiplier;
                     String name = "Default";
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                         Double m = doc.getDouble("multiplier");
-                         if (m != null && m > maxMult) {
-                             maxMult = m;
-                             name = doc.getString("name");
-                         }
+                        Double m = doc.getDouble("multiplier");
+                        if (m != null && m > maxMult) {
+                            maxMult = m;
+                            name = doc.getString("name");
+                        }
                     }
                     currentMultiplier = maxMult;
                     tvEquipmentInfo.setText("Equipment: " + name + " (" + currentMultiplier + "x coins/km)");
@@ -213,8 +213,8 @@ public class TrackingActivity extends ComponentActivity {
                         finish();
                     });
         } else {
-             Toast.makeText(this, "Session ended. Distance too short.", Toast.LENGTH_SHORT).show();
-             finish();
+            Toast.makeText(this, "Session ended. Distance too short.", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 

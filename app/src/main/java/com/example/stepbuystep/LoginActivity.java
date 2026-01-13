@@ -109,26 +109,54 @@ public class LoginActivity extends ComponentActivity {
     private void routeByRole() {
         if (auth.getCurrentUser() == null) return;
 
-        String uid = auth.getCurrentUser().getUid();
+        String uid = auth. getCurrentUser().getUid();
 
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
-                    if (!doc.exists()) {
+                    if (! doc.exists()) {
                         startActivity(new Intent(this, RegisterActivity.class));
                         finish();
                         return;
                     }
 
-                    String role = doc.getString("role"); // "coach" / "trainee"
+                    String role = doc. getString("role"); // "coach" / "trainee"
+
                     if ("coach".equals(role)) {
                         startActivity(new Intent(this, CoachHomeActivity.class));
+                        finish();
+                    } else if ("trainee".equals(role)) {
+                        // Check trainee status
+                        String status = doc.getString("status");
+
+                        if ("approved".equals(status)) {
+                            // Approved trainee - go to home
+                            startActivity(new Intent(this, TraineeHomeActivity.class));
+                            finish();
+                        } else if ("pending".equals(status)) {
+                            // Pending trainee - go to pending screen
+                            startActivity(new Intent(this, PendingApprovalActivity.class));
+                            finish();
+                        } else if ("rejected".equals(status)) {
+                            // Rejected trainee - go to pending screen (will show rejected message)
+                            startActivity(new Intent(this, PendingApprovalActivity.class));
+                            finish();
+                        } else if ("removed".equals(status)) {
+                            // Removed trainee - go to re-enter coach ID screen
+                            startActivity(new Intent(this, ReEnterCoachIdActivity.class));
+                            finish();
+                        } else {
+                            // No status field (old users) - treat as approved
+                            startActivity(new Intent(this, TraineeHomeActivity.class));
+                            finish();
+                        }
                     } else {
+                        // Unknown role
                         startActivity(new Intent(this, TraineeHomeActivity.class));
+                        finish();
                     }
-                    finish();
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to load profile: " + e.getMessage(), Toast.LENGTH_LONG).show()
-                );
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading profile:  " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 }

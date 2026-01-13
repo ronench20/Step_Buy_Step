@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Cup -->
+    <path
+        android:pathData="M8,4 H16 V8 C16,11.3137 13.3137,14 10,14 C6.6863,14 4,11.3137 4,8 V4 Z"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round" />
+
+    <!-- Left handle -->
+    <path
+        android:pathData="M4,6 H2 C2,9 3.5,10.5 6,11"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- Right handle -->
+    <path
+        android:pathData="M16,6 H18 C18,9 16.5,10.5 14,11"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- Stem -->
+    <path
+        android:pathData="M10,14 V18"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- Base -->
+    <path
+        android:pathData="M7,20 H13"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@android:color/black"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

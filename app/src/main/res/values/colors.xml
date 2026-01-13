@@ -23,4 +23,30 @@
     <color name="blue_50">#EFF6FF</color>
     <color name="gray_100">#F3F4F6</color>
     <color name="gray_400">#9CA3AF</color>
+
+    <color name="primary_blue">#007AFF</color>
+    <color name="success_green">#34C759</color>
+    <color name="text_muted">#8E8E93</color>
+
+
+    <!-- Brand -->
+    <color name="primary_blue_dark">#0051D5</color>
+
+    <!-- Success / Danger -->
+    <color name="danger_red">#FF3B30</color>
+
+    <!-- UI neutrals -->
+    <color name="bg_app">#F7F7F9</color>
+    <color name="border">#E6E6EA</color>
+    <color name="border_input">#D0D5DD</color>
+
+    <!-- Blue tints -->
+    <color name="blue_200">#B6D4FF</color>
+
+    <!-- Purple -->
+    <color name="purple_600">#7C3AED</color>
+    <color name="purple_100">#EDE9FE</color>
+
+    <!-- Muted surfaces -->
+    <color name="muted_surface">#F2F4F7</color>
 </resources>

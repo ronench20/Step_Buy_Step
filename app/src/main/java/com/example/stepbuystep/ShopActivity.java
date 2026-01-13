@@ -1,19 +1,17 @@
 package com.example.stepbuystep;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
-import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.adapter.ShopAdapter;
 import com.example.stepbuystep.model.Equipment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,8 +29,8 @@ public class ShopActivity extends ComponentActivity {
 
     private TextView tvCoinBalance;
     private TextView tvCurrentShoeName, tvCurrentShoeLevel, tvCurrentMultiplier;
-    private LinearLayout llShopContainer;
-    private ImageView btnBack;
+    private RecyclerView rvShoes;
+    private View btnBack; // Can be LinearLayout or View
 
     // Bottom Nav
     private LinearLayout navDashboard, navHistory, navLeaderboard;
@@ -40,6 +38,7 @@ public class ShopActivity extends ComponentActivity {
     private long currentCoins = 0;
     private Map<String, Integer> currentInventoryTiers = new HashMap<>();
     private List<Equipment> availableUpgrades = new ArrayList<>();
+    private ShopAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +49,7 @@ public class ShopActivity extends ComponentActivity {
         db = FirebaseFirestore.getInstance();
 
         initViews();
+        setupRecyclerView();
         setupListeners();
         loadUserData();
     }
@@ -59,12 +59,19 @@ public class ShopActivity extends ComponentActivity {
         tvCurrentShoeName = findViewById(R.id.tvCurrentShoeName);
         tvCurrentShoeLevel = findViewById(R.id.tvCurrentShoeLevel);
         tvCurrentMultiplier = findViewById(R.id.tvCurrentMultiplier);
-        llShopContainer = findViewById(R.id.llShopContainer);
+        rvShoes = findViewById(R.id.rvShoes);
         btnBack = findViewById(R.id.btnBack);
 
         navDashboard = findViewById(R.id.navDashboard);
         navHistory = findViewById(R.id.navHistory);
         navLeaderboard = findViewById(R.id.navLeaderboard);
+    }
+
+    private void setupRecyclerView() {
+        adapter = new ShopAdapter();
+        adapter.setListener(this::purchaseItem);
+        rvShoes.setLayoutManager(new LinearLayoutManager(this));
+        rvShoes.setAdapter(adapter);
     }
 
     private void setupListeners() {
@@ -76,11 +83,11 @@ public class ShopActivity extends ComponentActivity {
         });
 
         navHistory.setOnClickListener(v ->
-             Toast.makeText(this, "History feature coming soon", Toast.LENGTH_SHORT).show()
+                startActivity(new Intent(this, HistoryTraineeActivity.class))
         );
 
         navLeaderboard.setOnClickListener(v ->
-             startActivity(new Intent(this, GroupListActivity.class))
+                startActivity(new Intent(this, LeaderBoardActivity.class))
         );
     }
 
@@ -104,9 +111,7 @@ public class ShopActivity extends ComponentActivity {
         currentInventoryTiers.clear();
         currentInventoryTiers.put("walking_shoes", 0);
         currentInventoryTiers.put("running_shoes", 0);
-        currentInventoryTiers.put("coach_token", 0);
 
-        // Also find best shoe for "Current Shoe" display
         final String[] bestName = {"Basic Runner"};
         final int[] bestTier = {1};
         final double[] bestMult = {1.0};
@@ -149,142 +154,31 @@ public class ShopActivity extends ComponentActivity {
     private void loadShopItems() {
         availableUpgrades.clear();
 
+        // Check availability logic
+        // We show next available upgrade for each type
         addNextUpgrade("walking_shoes", "Basic Runner", currentInventoryTiers.get("walking_shoes"));
         addNextUpgrade("running_shoes", "Sport Jogger", currentInventoryTiers.get("running_shoes"));
-        // addNextUpgrade("coach_token", "Coach Token", currentInventoryTiers.get("coach_token")); // Hidden if not in UI mock
 
-        populateShopUI();
+        adapter.setItems(availableUpgrades, currentCoins);
     }
 
-    private void addNextUpgrade(String type, String baseName, int currentTier) {
-        if (currentTier >= 4) return;
+    private void addNextUpgrade(String type, String baseName, Integer currentTier) {
+        if (currentTier == null) currentTier = 0;
+        if (currentTier >= 5) return; // Cap at level 5
 
         int nextTier = currentTier + 1;
-        int price = nextTier * 500; // Example: 500, 1000, 1500
-        if (type.equals("walking_shoes") && nextTier == 1) price = 0; // First one might be free/default
+        int price = nextTier * 500;
+        if (type.equals("walking_shoes") && nextTier == 1) price = 0; // First walking shoe free
 
         double multiplier = 1.0;
-        if (type.equals("walking_shoes")) multiplier = nextTier * 1.0;
-        else if (type.equals("running_shoes")) multiplier = nextTier * 1.5;
+        if (type.equals("walking_shoes")) multiplier = 1.0 + (nextTier * 0.2);
+        else if (type.equals("running_shoes")) multiplier = 1.0 + (nextTier * 0.5);
+
+        // Round multiplier
+        multiplier = Math.round(multiplier * 10.0) / 10.0;
 
         Equipment item = new Equipment(type + "_" + nextTier, baseName, type, nextTier, price, multiplier);
         availableUpgrades.add(item);
-    }
-
-    private void populateShopUI() {
-        llShopContainer.removeAllViews();
-
-        // Re-implementing manually with code to avoid missing layout crash
-        for (Equipment item : availableUpgrades) {
-            View card = createShopCard(item);
-            llShopContainer.addView(card);
-            // Add margin
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) card.getLayoutParams();
-            params.setMargins(0, 0, 0, 32);
-            card.setLayoutParams(params);
-        }
-    }
-
-    private View createShopCard(Equipment item) {
-        // Programmatic UI creation to match `trainee store.png` item card
-        // CardView -> LinearLayout (Horizontal) -> Icon, Info, Button
-
-        CardView card = new CardView(this);
-        card.setCardElevation(4);
-        card.setRadius(32); // 16dp roughly
-        card.setCardBackgroundColor(Color.WHITE);
-        card.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.HORIZONTAL);
-        root.setPadding(48, 48, 48, 48); // 16dp
-        root.setGravity(android.view.Gravity.CENTER_VERTICAL);
-
-        // Icon Box
-        LinearLayout iconBox = new LinearLayout(this);
-        iconBox.setLayoutParams(new LinearLayout.LayoutParams(150, 150)); // 50dp
-        iconBox.setBackgroundResource(android.R.drawable.dialog_holo_light_frame); // Placeholder
-        // Better: use a shape drawable programmatically or a color
-        iconBox.setBackgroundColor(0xFFF3F4F6); // Gray 100
-        iconBox.setGravity(android.view.Gravity.CENTER);
-
-        ImageView icon = new ImageView(this);
-        icon.setImageResource(R.drawable.ic_shoe); // Use lock if locked?
-        if (item.getPrice() > currentCoins) {
-             icon.setImageResource(R.drawable.ic_lock);
-             icon.setColorFilter(0xFF9CA3AF);
-        } else {
-             icon.setColorFilter(0xFF007AFF);
-        }
-        iconBox.addView(icon);
-
-        root.addView(iconBox);
-
-        // Text Info
-        LinearLayout textInfo = new LinearLayout(this);
-        textInfo.setOrientation(LinearLayout.VERTICAL);
-        textInfo.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-        textInfo.setPadding(32, 0, 0, 0); // 16dp margin start
-
-        TextView name = new TextView(this);
-        name.setText(item.getName());
-        name.setTextSize(18);
-        name.setTypeface(null, android.graphics.Typeface.BOLD);
-        name.setTextColor(0xFF030213);
-        textInfo.addView(name);
-
-        LinearLayout levelBadge = new LinearLayout(this);
-        levelBadge.setOrientation(LinearLayout.HORIZONTAL);
-        levelBadge.setPadding(0, 8, 0, 0);
-
-        TextView level = new TextView(this);
-        level.setText("Level " + item.getTier());
-        level.setBackgroundResource(android.R.drawable.btn_default); // Placeholder
-        level.setPadding(16, 4, 16, 4);
-        level.setTextSize(12);
-        levelBadge.addView(level);
-
-        TextView mult = new TextView(this);
-        mult.setText(item.getMultiplier() + "x");
-        mult.setBackgroundColor(0xFF34C759); // Green
-        mult.setTextColor(Color.WHITE);
-        mult.setPadding(16, 4, 16, 4);
-        mult.setTextSize(12);
-        LinearLayout.LayoutParams multParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        multParams.setMargins(16, 0, 0, 0);
-        mult.setLayoutParams(multParams);
-        levelBadge.addView(mult);
-
-        textInfo.addView(levelBadge);
-
-        TextView price = new TextView(this);
-        price.setText(item.getPrice() + " coins");
-        price.setTextColor(0xFF717182);
-        price.setTextSize(14);
-        textInfo.addView(price);
-
-        root.addView(textInfo);
-
-        // Button
-        Button actionBtn = new Button(this);
-        if (item.getPrice() <= currentCoins) {
-            actionBtn.setText("Upgrade");
-            actionBtn.setBackgroundColor(0xFF717182); // Grayish as in screenshot
-            actionBtn.setTextColor(Color.WHITE);
-            actionBtn.setOnClickListener(v -> purchaseItem(item));
-        } else {
-            actionBtn.setText("Locked");
-            actionBtn.setEnabled(false);
-            actionBtn.setBackgroundColor(0xFFE5E7EB);
-            actionBtn.setTextColor(0xFF9CA3AF);
-        }
-
-        root.addView(actionBtn);
-
-        card.addView(root);
-        return card;
     }
 
     private void purchaseItem(Equipment item) {

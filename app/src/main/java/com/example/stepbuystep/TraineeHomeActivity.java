@@ -3,16 +3,23 @@ package com.example.stepbuystep;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.adapter.WorkoutAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TraineeHomeActivity extends ComponentActivity {
 
@@ -23,6 +30,11 @@ public class TraineeHomeActivity extends ComponentActivity {
     private CardView btnCategoryRunning, btnCategoryWalking;
     private LinearLayout navDashboard, navHistory, navShoeStore, navLeaderboard;
     private LinearLayout btnLogout;
+    private RecyclerView rvWorkouts;
+    private WorkoutAdapter workoutAdapter;
+    private LinearLayout emptyStateWorkouts;
+    private FrameLayout btnNotifications;
+    private TextView tvNotificationBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,24 +47,36 @@ public class TraineeHomeActivity extends ComponentActivity {
         initViews();
         setupListeners();
         loadUserData();
+        fetchUnreadMessageCount();
     }
 
     private void initViews() {
-        tvUserName = findViewById(R.id.tvUserName);
+        tvUserName = findViewById(R.id. tvUserName);
         tvShoeCount = findViewById(R.id.tvShoeCount);
         tvCurrentShoeName = findViewById(R.id.tvCurrentShoeName);
         tvCurrentShoeLevel = findViewById(R.id.tvCurrentShoeLevel);
         tvMultiplier = findViewById(R.id.tvMultiplier);
 
-        btnCategoryRunning = findViewById(R.id.btnCategoryRunning);
+        btnCategoryRunning = findViewById(R.id. btnCategoryRunning);
         btnCategoryWalking = findViewById(R.id.btnCategoryWalking);
 
         navDashboard = findViewById(R.id.navDashboard);
         navHistory = findViewById(R.id.navHistory);
         navShoeStore = findViewById(R.id.navShoeStore);
-        navLeaderboard = findViewById(R.id.navLeaderboard);
+        navLeaderboard = findViewById(R.id. navLeaderboard);
 
         btnLogout = findViewById(R.id.btnLogout);
+
+        // NEW:  Workout views
+        rvWorkouts = findViewById(R.id.rvWorkouts);
+        emptyStateWorkouts = findViewById(R.id.emptyStateWorkouts);
+
+        workoutAdapter = new WorkoutAdapter();
+        rvWorkouts.setLayoutManager(new LinearLayoutManager(this));
+        rvWorkouts.setAdapter(workoutAdapter);
+
+        btnNotifications = findViewById(R.id.btnNotifications);
+        tvNotificationBadge = findViewById(R.id.tvNotificationBadge);
     }
 
     private void setupListeners() {
@@ -71,11 +95,11 @@ public class TraineeHomeActivity extends ComponentActivity {
         navShoeStore.setOnClickListener(v -> startActivity(new Intent(this, ShopActivity.class)));
 
         navLeaderboard.setOnClickListener(v -> {
-             // Assuming GroupListActivity serves as the leaderboard/group view for trainees too
-             // If not, we might need a separate TraineeLeaderboardActivity
-             // For now, let's use GroupListActivity or a Toast if strictly restricted
-             // Previous spec said "Trainees can see a list of all members under their coach."
-             startActivity(new Intent(this, GroupListActivity.class));
+            // Assuming GroupListActivity serves as the leaderboard/group view for trainees too
+            // If not, we might need a separate TraineeLeaderboardActivity
+            // For now, let's use GroupListActivity or a Toast if strictly restricted
+            // Previous spec said "Trainees can see a list of all members under their coach."
+            startActivity(new Intent(this, LeaderBoardActivity.class));
         });
 
         navHistory.setOnClickListener(v -> startActivity(new Intent(this, HistoryTraineeActivity.class)));
@@ -83,6 +107,68 @@ public class TraineeHomeActivity extends ComponentActivity {
         navDashboard.setOnClickListener(v -> {
             // Already here
         });
+
+        // Notifications
+        btnNotifications.setOnClickListener(v -> openMessagesScreen());
+    }
+
+    private void fetchUnreadMessageCount() {
+        String uid = auth.getUid();
+        if (uid == null) return;
+
+        db.collection("messages")
+                .whereEqualTo("traineeId", uid)
+                .whereEqualTo("isRead", false)
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (error != null) return;
+                    if (querySnapshot != null) {
+                        int unreadCount = querySnapshot.size();
+                        updateNotificationBadge(unreadCount);
+                    }
+                });
+    }
+
+    private void checkApprovalStatus() {
+        String uid = auth.getUid();
+        if (uid == null) return;
+
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc. exists()) {
+                        String status = doc.getString("status");
+
+                        if ("pending".equals(status)) {
+                            // Status changed to pending
+                            Toast.makeText(this, "Your account status has changed", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(this, PendingApprovalActivity.class));
+                            finish();
+                        } else if ("rejected".equals(status)) {
+                            // Status changed to rejected
+                            Toast.makeText(this, "Your account status has changed", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(this, PendingApprovalActivity.class));
+                            finish();
+                        } else if ("removed".equals(status)) {
+                            // Coach removed the trainee
+                            Toast.makeText(this, "Your coach has removed you from their team", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(this, ReEnterCoachIdActivity.class));
+                            finish();
+                        }
+                    }
+                });
+    }
+
+    private void updateNotificationBadge(int count) {
+        if (count > 0) {
+            tvNotificationBadge. setText(String.valueOf(count));
+            tvNotificationBadge.setVisibility(View. VISIBLE);
+        } else {
+            tvNotificationBadge. setVisibility(View.GONE);
+        }
+    }
+
+    private void openMessagesScreen() {
+        Intent intent = new Intent(this, MessagesActivity.class);
+        startActivity(intent);
     }
 
     private void startTrackingActivity(String type) {
@@ -94,7 +180,10 @@ public class TraineeHomeActivity extends ComponentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        checkApprovalStatus();
         loadUserData(); // Refresh data when returning from Shop/Tracking
+        loadWorkouts();
+        fetchUnreadMessageCount();
     }
 
     private void loadUserData() {
@@ -120,8 +209,9 @@ public class TraineeHomeActivity extends ComponentActivity {
                     }
                 })
                 .addOnFailureListener(e ->
-                    Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show()
                 );
+        fetchUnreadMessageCount();
     }
 
     private void fetchBestShoe(String uid) {
@@ -152,6 +242,43 @@ public class TraineeHomeActivity extends ComponentActivity {
                         tvCurrentShoeLevel.setText("Level " + bestTier);
                         tvMultiplier.setText(bestMult + "x");
                     }
+                });
+    }
+
+    private void loadWorkouts() {
+        String uid = auth.getUid();
+        if (uid == null) return;
+
+        db.collection("workouts")
+                .whereArrayContains("traineeIds", uid)
+                // Remove the orderBy for now
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<WorkoutAdapter.WorkoutItem> workouts = new ArrayList<>();
+
+                    for (com. google.firebase.firestore. QueryDocumentSnapshot doc : querySnapshot) {
+                        String type = doc.getString("type");
+                        String date = doc.getString("date");
+                        String time = doc.getString("time");
+                        String location = doc. getString("location");
+
+                        workouts.add(new WorkoutAdapter.WorkoutItem(type, date, time, location));
+                    }
+
+                    workoutAdapter. setWorkouts(workouts);
+
+                    // Show/hide empty state
+                    if (workouts. isEmpty()) {
+                        rvWorkouts.setVisibility(View. GONE);
+                        emptyStateWorkouts.setVisibility(View.VISIBLE);
+                    } else {
+                        rvWorkouts. setVisibility(View.VISIBLE);
+                        emptyStateWorkouts.setVisibility(View. GONE);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading workouts:  " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 });
     }
 }

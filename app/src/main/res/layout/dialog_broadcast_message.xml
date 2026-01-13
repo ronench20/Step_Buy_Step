@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Broadcast Message"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#111111"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Send a message to your athletes"
+        android:textSize="13sp"
+        android:textColor="@color/text_muted"/>
+
+    <EditText
+        android:id="@+id/etMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:minLines="4"
+        android:gravity="top|start"
+        android:hint="Type your message here..."
+        android:background="@drawable/bg_textarea"
+        android:padding="12dp"
+        android:inputType="textMultiLine"/>
+
+    <!-- Recipients Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Send to:"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#111111"/>
+
+    <!-- Send to All Checkbox -->
+    <CheckBox
+        android:id="@+id/cbSendToAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="All trainees"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:checked="true" />
+
+    <TextView
+        android:id="@+id/tvSelectTrainees"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Select specific trainees:"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTraineesList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:maxHeight="200dp"
+        android:nestedScrollingEnabled="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/btnSend"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/bg_button_blue"
+        android:clickable="true"
+        android:focusable="true">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_send"
+            android:tint="@android:color/white"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Send Message"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+</LinearLayout>

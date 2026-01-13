@@ -6,29 +6,37 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget. TextView;
+import android.widget. Toast;
 
-import androidx.activity.ComponentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.adapter.UpcomingWorkoutAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-public class CoachHomeActivity extends ComponentActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CoachHomeActivity extends BaseCoachActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    private TextView tvCoachId;
+    private TextView tvCoachIdShort;
     private TextView tvActiveAthletesCount;
     private TextView tvPendingRequestsCount;
-    private TextView tvUpcomingCount;
-    private LinearLayout btnCopyId;
+    private LinearLayout cardPendingRequests;
+    private TextView badgeUpcomingCount;
+    private LinearLayout btnCopyCoachId;
+    private LinearLayout btnBroadcastMessage;
     private LinearLayout btnLogout;
-    private Button btnBroadcastMessage;
+    private RecyclerView rvUpcoming;
+    private View cardNoUpcoming;
 
     // Bottom Nav
     private LinearLayout navMyAthletes;
@@ -37,73 +45,92 @@ public class CoachHomeActivity extends ComponentActivity {
     private LinearLayout navSettings;
 
     private long coachIdValue = 0;
+    private UpcomingWorkoutAdapter upcomingAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.coach_home);
+        setContentView(R.layout. coach_home);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         initViews();
+        setupRecyclerView();
         setupListeners();
         fetchCoachData();
+        setupNavigationBar(BaseCoachActivity. NavItem.DASH_COACH);
+
+        fetchUpcomingWorkouts();
     }
 
     private void initViews() {
-        tvCoachId = findViewById(R.id.tvCoachId);
+        tvCoachIdShort = findViewById(R.id.tvCoachIdShort);
         tvActiveAthletesCount = findViewById(R.id.tvActiveAthletesCount);
         tvPendingRequestsCount = findViewById(R.id.tvPendingRequestsCount);
-        tvUpcomingCount = findViewById(R.id.tvUpcomingCount);
-        btnCopyId = findViewById(R.id.btnCopyId);
-        btnLogout = findViewById(R.id.btnLogout);
-        btnBroadcastMessage = findViewById(R.id.btnBroadcastMessage);
+        cardPendingRequests = findViewById(R.id.cardPendingRequests);
+        badgeUpcomingCount = findViewById(R.id.badgeUpcomingCount);
 
-        navMyAthletes = findViewById(R.id.navMyAthletes);
+        btnCopyCoachId = findViewById(R.id.btnCopyCoachId);
+        btnBroadcastMessage = findViewById(R.id.btnBroadcastMessage);
+        btnLogout = findViewById(R. id.btnLogout);
+        rvUpcoming = findViewById(R.id.rvUpcoming);
+        cardNoUpcoming = findViewById(R.id.cardNoUpcoming);
+
+        navMyAthletes = findViewById(R.id. navDashboardCoach);
         navMyHistory = findViewById(R.id.navMyHistory);
-        navCreate = findViewById(R.id.navCreate);
-        navSettings = findViewById(R.id.navSettings);
+        navCreate = findViewById(R. id.navCreate);
+        navSettings = findViewById(R.id. navSettings);
+    }
+
+    private void setupRecyclerView() {
+        upcomingAdapter = new UpcomingWorkoutAdapter();
+        rvUpcoming. setLayoutManager(new LinearLayoutManager(this));
+        rvUpcoming.setAdapter(upcomingAdapter);
     }
 
     private void setupListeners() {
         btnLogout.setOnClickListener(v -> {
-            auth.signOut();
-            startActivity(new Intent(this, LoginActivity.class));
+            auth. signOut();
+            startActivity(new Intent(this, LoginActivity. class));
             finish();
         });
 
-        btnCopyId.setOnClickListener(v -> {
+        btnCopyCoachId.setOnClickListener(v -> {
             if (coachIdValue != 0) {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("Coach ID", String.valueOf(coachIdValue));
-                clipboard.setPrimaryClip(clip);
+                clipboard. setPrimaryClip(clip);
                 Toast.makeText(this, "Copied ID: " + coachIdValue, Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnBroadcastMessage.setOnClickListener(v -> {
-            // Future implementation: Dialog to send message
-            Toast.makeText(this, "Broadcast message feature coming soon", Toast.LENGTH_SHORT).show();
-        });
+        btnBroadcastMessage.setOnClickListener(v -> showBroadcastDialog());
 
         navMyAthletes.setOnClickListener(v -> {
-             // Already here/Refresh or GroupListActivity
-             // For now, redirect to GroupListActivity which seems to be the "My Athletes" page detail
-             startActivity(new Intent(this, GroupListActivity.class));
+            startActivity(new Intent(this, LeaderBoardActivity.class));
         });
 
+        cardPendingRequests.setOnClickListener(v ->
+                startActivity(new Intent(this, PendingRequestsActivity. class))
+        );
+
         navCreate.setOnClickListener(v ->
-            startActivity(new Intent(this, CreateWorkoutActivity.class))
+                startActivity(new Intent(this, CreateWorkoutActivity.class))
         );
 
         navMyHistory.setOnClickListener(v ->
-             startActivity(new Intent(this, HistoryCoachActivity.class))
+                startActivity(new Intent(this, HistoryCoachActivity.class))
         );
 
         navSettings.setOnClickListener(v ->
-             Toast.makeText(this, "Settings not implemented yet", Toast.LENGTH_SHORT).show()
+                startActivity(new Intent(this, CoachSettingsActivity.class))
         );
+    }
+
+    private void showBroadcastDialog() {
+        BroadcastMessageDialogActivity dialog = new BroadcastMessageDialogActivity();
+        dialog.show(getSupportFragmentManager(),"BroadcastMessageDialog");
     }
 
     private void fetchCoachData() {
@@ -116,25 +143,80 @@ public class CoachHomeActivity extends ComponentActivity {
                         Long cid = documentSnapshot.getLong("coachID");
                         if (cid != null) {
                             coachIdValue = cid;
-                            tvCoachId.setText("ID: " + coachIdValue);
+                            tvCoachIdShort.setText("ID: " + coachIdValue);
                             fetchAthletesCount(coachIdValue);
+                            fetchPendingRequestsCount(coachIdValue);
                         } else {
-                             tvCoachId.setText("ID: N/A");
+                            tvCoachIdShort.setText("ID: N/A");
                         }
+                    }
+                });
+    }
+
+    private void fetchPendingRequestsCount(long coachId) {
+        db.collection("users")
+                .whereEqualTo("role", "trainee")
+                .whereEqualTo("coachID", coachId)
+                .whereEqualTo("status", "pending")
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (error != null) return;
+                    if (querySnapshot != null) {
+                        int count = querySnapshot. size();
+                        tvPendingRequestsCount.setText(String.valueOf(count));
                     }
                 });
     }
 
     private void fetchAthletesCount(long coachId) {
         db.collection("users")
-                .whereEqualTo("coachID", coachId) // Fixed case to match registration
+                .whereEqualTo("role", "trainee")
+                .whereEqualTo("coachID", coachId)
+                .whereEqualTo("status", "approved")
+                .addSnapshotListener((querySnapshot, error) -> {
+                    if (error != null) return;
+                    if (querySnapshot != null) {
+                        int count = querySnapshot.size();
+                        tvActiveAthletesCount.setText(String.valueOf(count));
+                    }
+                });
+    }
+
+    private void fetchUpcomingWorkouts() {
+        if (auth.getCurrentUser() == null) return;
+        String uid = auth.getCurrentUser().getUid();
+
+        db.collection("workouts")
+                .whereEqualTo("coachId", uid)
+                . orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(3)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    int count = queryDocumentSnapshots.size() - 1;
-                    tvActiveAthletesCount.setText(String.valueOf(count));
-                });
+                    List<UpcomingWorkoutAdapter. WorkoutItem> items = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String type = doc.getString("type");
+                        String date = doc.getString("date");
+                        String time = doc.getString("time");
+                        String location = doc.getString("location");
 
-        // Pending requests logic would go here if implemented
+                        if (type == null) type = "Workout";
+                        if (date == null) date = "";
+                        if (time == null) time = "";
+                        if (location == null) location = "";
+
+                        items.add(new UpcomingWorkoutAdapter.WorkoutItem(doc.getId(), type, date, time, location, 0));
+                    }
+
+                    if (items.isEmpty()) {
+                        rvUpcoming.setVisibility(View.GONE);
+                        cardNoUpcoming. setVisibility(View.VISIBLE);
+                        badgeUpcomingCount.setText("0");
+                    } else {
+                        rvUpcoming.setVisibility(View.VISIBLE);
+                        cardNoUpcoming.setVisibility(View.GONE);
+                        badgeUpcomingCount.setText(String.valueOf(items.size()));
+                        upcomingAdapter.setItems(items);
+                    }
+                });
     }
 
     @Override
@@ -142,6 +224,8 @@ public class CoachHomeActivity extends ComponentActivity {
         super.onResume();
         if (coachIdValue != 0) {
             fetchAthletesCount(coachIdValue);
+            fetchPendingRequestsCount(coachIdValue);
         }
+        fetchUpcomingWorkouts();
     }
 }

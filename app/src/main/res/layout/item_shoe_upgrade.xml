@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardShoe"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Icon box (w-16 h-16 rounded-2xl) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardIconBox"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#F3F4F6">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:foregroundGravity="center">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivIcon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_footprints"
+                        android:tint="#34C759"
+                        android:contentDescription="@string/shoe" />
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Middle -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvShoeName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Shoe Name"
+                        android:textSize="14sp"
+                        android:textColor="#111827" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivWarning"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/ic_alert_circle"
+                        android:tint="#F97316"
+                        android:visibility="gone"
+                        android:contentDescription="@string/insufficient" />
+
+                    <!-- "Unlocked" badge -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipUnlocked"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Unlocked"
+                        android:textSize="10sp"
+                        android:textColor="#34C759"
+                        app:chipBackgroundColor="#1A34C759"
+                        app:chipCornerRadius="12dp"
+                        app:chipStrokeColor="#4D34C759"
+                        app:chipStrokeWidth="1dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Level 1"
+                        android:textSize="10sp"
+                        android:textColor="#111827"
+                        app:chipBackgroundColor="#00000000"
+                        app:chipStrokeColor="#E5E7EB"
+                        app:chipStrokeWidth="1dp"
+                        app:chipCornerRadius="12dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipMultiplier"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="1x"
+                        android:textSize="10sp"
+                        android:textColor="#FFFFFF"
+                        app:chipBackgroundColor="#34C759"
+                        app:chipCornerRadius="12dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvCost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="10 shoe size"
+                    android:textSize="12sp"
+                    android:textColor="#6B7280" />
+            </LinearLayout>
+
+            <!-- Right action -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipActive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Active"
+                    android:textColor="#FFFFFF"
+                    app:chipBackgroundColor="#007AFF"
+                    app:chipCornerRadius="12dp"
+                    android:visibility="gone" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOwned"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Owned"
+                    android:textColor="#34C759"
+                    app:chipBackgroundColor="#1A34C759"
+                    app:chipCornerRadius="12dp"
+                    app:chipStrokeColor="#4D34C759"
+                    app:chipStrokeWidth="1dp"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUpgrade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Upgrade"
+                    android:textAllCaps="false"
+                    android:minHeight="36dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:cornerRadius="10dp"
+                    app:backgroundTint="#007AFF"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- Locked / can't afford section (progress) -->
+        <LinearLayout
+            android:id="@+id/layoutNeedMore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingTop="12dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@android:color/transparent">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E5E7EB" />
+
+            <TextView
+                android:id="@+id/tvNeedMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Need 5 more shoe size"
+                android:textSize="10sp"
+                android:textColor="#6B7280" />
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progressAfford"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="8dp"
+                app:trackThickness="8dp"
+                app:trackCornerRadius="999dp"
+                app:indicatorColor="#007AFF"
+                app:trackColor="#E5E7EB"
+                android:progress="30" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

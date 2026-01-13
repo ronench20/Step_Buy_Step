@@ -1,31 +1,27 @@
-package com.example.stepbuystep;
+package com. example.stepbuystep;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stepbuystep.adapter.HistoryAdapter;
-import com.example.stepbuystep.model.HistoryItem;
+import com.example.stepbuystep.model. HistoryItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase. firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryCoachActivity extends AppCompatActivity {
+public class HistoryCoachActivity extends BaseCoachActivity {
 
-    private Button btnBack;
-    private TextView tvTotalCreated;
-    private RecyclerView rvHistory;
-    private View emptyStateCard;
+    private LinearLayout btnBack;
+    private RecyclerView rvWorkouts;
+    private View cardEmpty;
 
     private HistoryAdapter adapter;
     private FirebaseFirestore db;
@@ -37,26 +33,26 @@ public class HistoryCoachActivity extends AppCompatActivity {
         setContentView(R.layout.history_coach);
 
         db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth. getInstance();
 
         initViews();
+        setupNavigationBar(NavItem.MY_HISTORY);  // Highlight "My History"
         setupRecyclerView();
         fetchCreatedWorkouts();
     }
 
     private void initViews() {
         btnBack = findViewById(R.id.btnBack);
-        tvTotalCreated = findViewById(R.id.tvTotalCreated);
-        rvHistory = findViewById(R.id.rvHistory);
-        emptyStateCard = findViewById(R.id.emptyStateCard);
+        rvWorkouts = findViewById(R.id.rvWorkouts);
+        cardEmpty = findViewById(R.id.cardEmpty);
 
         btnBack.setOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {
         adapter = new HistoryAdapter();
-        rvHistory.setLayoutManager(new LinearLayoutManager(this));
-        rvHistory.setAdapter(adapter);
+        rvWorkouts.setLayoutManager(new LinearLayoutManager(this));
+        rvWorkouts.setAdapter(adapter);
     }
 
     private void fetchCreatedWorkouts() {
@@ -69,12 +65,11 @@ public class HistoryCoachActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<HistoryItem> items = new ArrayList<>();
-                    int count = 0;
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String type = doc.getString("type");
+                        String type = doc. getString("type");
                         String date = doc.getString("date");
-                        String time = doc.getString("time");
+                        String time = doc. getString("time");
                         String location = doc.getString("location");
                         Long createdAt = doc.getLong("createdAt");
 
@@ -84,31 +79,23 @@ public class HistoryCoachActivity extends AppCompatActivity {
                         if (location == null) location = "";
                         if (createdAt == null) createdAt = 0L;
 
-                        count++;
-
                         String subtitle = String.format("%s at %s", time, location);
                         String iconType = type.toLowerCase().contains("run") ? "run" : "walk";
 
-                        items.add(new HistoryItem(doc.getId(), type, subtitle, date, createdAt, iconType));
+                        items. add(new HistoryItem(doc.getId(), type, subtitle, date, createdAt, iconType));
                     }
 
-                    updateUI(items, count);
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to load history", Toast.LENGTH_SHORT).show();
-                    emptyStateCard.setVisibility(View.VISIBLE);
+                    updateUI(items);
                 });
     }
 
-    private void updateUI(List<HistoryItem> items, int count) {
-        tvTotalCreated.setText(String.valueOf(count));
-
+    private void updateUI(List<HistoryItem> items) {
         if (items.isEmpty()) {
-            emptyStateCard.setVisibility(View.VISIBLE);
-            rvHistory.setVisibility(View.GONE);
+            cardEmpty.setVisibility(View.VISIBLE);
+            rvWorkouts.setVisibility(View.GONE);
         } else {
-            emptyStateCard.setVisibility(View.GONE);
-            rvHistory.setVisibility(View.VISIBLE);
+            cardEmpty.setVisibility(View. GONE);
+            rvWorkouts.setVisibility(View. VISIBLE);
             adapter.setItems(items);
         }
     }

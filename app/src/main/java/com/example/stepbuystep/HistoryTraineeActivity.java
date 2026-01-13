@@ -2,7 +2,7 @@ package com.example.stepbuystep;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,10 +22,11 @@ import java.util.List;
 
 public class HistoryTraineeActivity extends AppCompatActivity {
 
-    private Button btnBack;
+    private LinearLayout btnBack;
     private TextView tvTotalWorkouts, tvTotalDistance;
+    private TextView tvTotalCalories, tvTotalPoints;
     private RecyclerView rvHistory;
-    private View emptyStateCard;
+    private View cardEmpty;
 
     private HistoryAdapter adapter;
     private FirebaseFirestore db;
@@ -48,8 +49,10 @@ public class HistoryTraineeActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         tvTotalWorkouts = findViewById(R.id.tvTotalWorkouts);
         tvTotalDistance = findViewById(R.id.tvTotalDistance);
+        tvTotalCalories = findViewById(R.id.tvTotalCalories);
+        tvTotalPoints = findViewById(R.id.tvTotalPoints);
         rvHistory = findViewById(R.id.rvHistory);
-        emptyStateCard = findViewById(R.id.emptyStateCard);
+        cardEmpty = findViewById(R.id.cardEmpty);
 
         btnBack.setOnClickListener(v -> finish());
     }
@@ -72,6 +75,9 @@ public class HistoryTraineeActivity extends AppCompatActivity {
                     List<HistoryItem> items = new ArrayList<>();
                     double totalDist = 0;
                     int count = 0;
+                    // Note: Calories and Points logic not yet in original code, placeholder or calculate
+                    int totalCalories = 0;
+                    int totalPoints = 0;
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         String type = doc.getString("type");
@@ -88,29 +94,32 @@ public class HistoryTraineeActivity extends AppCompatActivity {
                         totalDist += dist;
                         count++;
 
+                        // Simple estimation for UI filling
+                        totalCalories += (int)(dist * 60);
+                        totalPoints += (int)(dist * 100);
+
                         String subtitle = String.format("%.2f km • %d steps", dist, steps);
                         String iconType = type.toLowerCase().contains("run") ? "run" : "walk";
 
                         items.add(new HistoryItem(doc.getId(), type, subtitle, date, timestamp, iconType));
                     }
 
-                    updateUI(items, count, totalDist);
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to load history", Toast.LENGTH_SHORT).show();
-                    emptyStateCard.setVisibility(View.VISIBLE);
+                    updateUI(items, count, totalDist, totalCalories, totalPoints);
                 });
     }
 
-    private void updateUI(List<HistoryItem> items, int count, double totalDist) {
+    private void updateUI(List<HistoryItem> items, int count, double totalDist, int calories, int points) {
         tvTotalWorkouts.setText(String.valueOf(count));
         tvTotalDistance.setText(String.format("%.1f", totalDist));
 
+        if (tvTotalCalories != null) tvTotalCalories.setText(String.valueOf(calories));
+        if (tvTotalPoints != null) tvTotalPoints.setText(String.valueOf(points));
+
         if (items.isEmpty()) {
-            emptyStateCard.setVisibility(View.VISIBLE);
+            cardEmpty.setVisibility(View.VISIBLE);
             rvHistory.setVisibility(View.GONE);
         } else {
-            emptyStateCard.setVisibility(View.GONE);
+            cardEmpty.setVisibility(View.GONE);
             rvHistory.setVisibility(View.VISIBLE);
             adapter.setItems(items);
         }

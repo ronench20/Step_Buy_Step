@@ -132,12 +132,15 @@ public class EnterInfoActivity extends ComponentActivity {
 
     private void saveUser(String uid, Map<String, Object> data) {
         data.put("role", "trainee");
+        data.put("status", "pending"); // Add pending status
+
         db.collection("users")
                 .document(uid)
                 .set(data)
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Profile saved!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(this, TraineeHomeActivity.class));
+                    Toast.makeText(this, "Registration submitted!  Waiting for coach approval.", Toast.LENGTH_LONG).show();
+                    // Go to pending screen instead of trainee home
+                    startActivity(new Intent(this, PendingApprovalActivity.class));
                     finish();
                 })
                 .addOnFailureListener(e ->
