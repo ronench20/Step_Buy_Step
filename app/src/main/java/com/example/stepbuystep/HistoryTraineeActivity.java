@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,6 +18,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import java.text.ParseException;
+import java.text. SimpleDateFormat;
+import java. util.Calendar;
+import java.util.Date;
+import java.util. Locale;
 
 public class HistoryTraineeActivity extends AppCompatActivity {
 
@@ -63,19 +68,40 @@ public class HistoryTraineeActivity extends AppCompatActivity {
         rvHistory.setAdapter(adapter);
     }
 
+    private boolean isPastWorkout(String dateStr) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date workoutDate = dateFormat. parse(dateStr);
+
+            if (workoutDate == null) return false;
+
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar. SECOND, 0);
+            today.set(Calendar.MILLISECOND, 0);
+
+            // Past if before today
+            return workoutDate. getTime() < today.getTimeInMillis();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Replace the fetchHistory() method
     private void fetchHistory() {
         String uid = auth.getUid();
         if (uid == null) return;
 
         db.collection("training_history")
                 .whereEqualTo("userId", uid)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .orderBy("timestamp", Query.Direction. DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<HistoryItem> items = new ArrayList<>();
                     double totalDist = 0;
                     int count = 0;
-                    // Note: Calories and Points logic not yet in original code, placeholder or calculate
                     int totalCalories = 0;
                     int totalPoints = 0;
 
@@ -84,7 +110,7 @@ public class HistoryTraineeActivity extends AppCompatActivity {
                         Double dist = doc.getDouble("distance");
                         Long steps = doc.getLong("steps");
                         String date = doc.getString("date");
-                        Long timestamp = doc.getLong("timestamp");
+                        Long timestamp = doc. getLong("timestamp");
 
                         if (type == null) type = "Workout";
                         if (dist == null) dist = 0.0;
@@ -94,17 +120,48 @@ public class HistoryTraineeActivity extends AppCompatActivity {
                         totalDist += dist;
                         count++;
 
-                        // Simple estimation for UI filling
                         totalCalories += (int)(dist * 60);
                         totalPoints += (int)(dist * 100);
 
                         String subtitle = String.format("%.2f km • %d steps", dist, steps);
                         String iconType = type.toLowerCase().contains("run") ? "run" : "walk";
 
-                        items.add(new HistoryItem(doc.getId(), type, subtitle, date, timestamp, iconType));
+                        items. add(new HistoryItem(doc.getId(), type, subtitle, date, timestamp, iconType));
                     }
 
-                    updateUI(items, count, totalDist, totalCalories, totalPoints);
+                    fetchPastScheduledWorkouts(uid, items, count, totalDist, totalCalories, totalPoints);
+                });
+    }
+
+    private void fetchPastScheduledWorkouts(String uid, List<HistoryItem> existingItems,
+                                            int count, double totalDist, int totalCalories, int totalPoints) {
+        db.collection("workouts")
+                .whereArrayContains("traineeIds", uid)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        String type = doc.getString("type");
+                        String date = doc.getString("date");
+                        String time = doc.getString("time");
+                        String location = doc.getString("location");
+
+                        // Only add if it's a past workout
+                        if (date != null && isPastWorkout(date)) {
+                            String subtitle = String.format("%s at %s", time != null ? time : "", location != null ? location : "");
+                            String iconType = type != null && type.toLowerCase().contains("run") ? "run" : "walk";
+
+                            // Use 0 as timestamp for scheduled workouts (or you could parse date to timestamp)
+                            existingItems.add(new HistoryItem(doc.getId(),
+                                    type != null ?  type + " (Scheduled)" : "Scheduled Workout",
+                                    subtitle, date, 0L, iconType));
+                        }
+                    }
+
+                    updateUI(existingItems, count, totalDist, totalCalories, totalPoints);
+                })
+                .addOnFailureListener(e -> {
+                    // If scheduled workouts fetch fails, still show tracking history
+                    updateUI(existingItems, count, totalDist, totalCalories, totalPoints);
                 });
     }
 

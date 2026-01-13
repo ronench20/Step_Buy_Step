@@ -30,6 +30,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
     private TextView tvCoachIdShort;
     private TextView tvActiveAthletesCount;
     private TextView tvPendingRequestsCount;
+    private LinearLayout cardActiveAthletes;
     private LinearLayout cardPendingRequests;
     private TextView badgeUpcomingCount;
     private LinearLayout btnCopyCoachId;
@@ -67,6 +68,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
     private void initViews() {
         tvCoachIdShort = findViewById(R.id.tvCoachIdShort);
         tvActiveAthletesCount = findViewById(R.id.tvActiveAthletesCount);
+        cardActiveAthletes = findViewById(R.id.cardActiveAthletes);
         tvPendingRequestsCount = findViewById(R.id.tvPendingRequestsCount);
         cardPendingRequests = findViewById(R.id.cardPendingRequests);
         badgeUpcomingCount = findViewById(R.id.badgeUpcomingCount);
@@ -110,6 +112,10 @@ public class CoachHomeActivity extends BaseCoachActivity {
         navMyAthletes.setOnClickListener(v -> {
             startActivity(new Intent(this, LeaderBoardActivity.class));
         });
+
+        cardActiveAthletes.setOnClickListener(v ->
+                startActivity(new Intent(this, LeaderBoardActivity.class))
+        );
 
         cardPendingRequests.setOnClickListener(v ->
                 startActivity(new Intent(this, PendingRequestsActivity.class))

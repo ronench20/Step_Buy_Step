@@ -67,4 +67,8 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.ViewHold
             tvLocation = itemView.findViewById(R.id.tvWorkoutLocation);
         }
     }
+
+    public List<WorkoutItem> getWorkouts() {
+        return workouts;
+    }
 }

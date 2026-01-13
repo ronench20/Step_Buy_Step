@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.ComponentActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,23 +18,29 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.ParseException;
+import java.text. SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraineeHomeActivity extends ComponentActivity {
-
+public class TraineeHomeActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    private TextView tvUserName, tvShoeCount, tvCurrentShoeName, tvCurrentShoeLevel, tvMultiplier;
-    private CardView btnCategoryRunning, btnCategoryWalking;
+    private TextView tvUserName, tvShoeCount, tvCurrentShoeName, tvCurrentShoeLevel, tvMultiplier, tvCoachScheduledBadge, tvNotificationBadge;
+    private CardView btnCategoryRunning, btnCategoryWalking, btnCoachScheduled;
     private LinearLayout navDashboard, navHistory, navShoeStore, navLeaderboard;
     private LinearLayout btnLogout;
     private RecyclerView rvWorkouts;
     private WorkoutAdapter workoutAdapter;
     private LinearLayout emptyStateWorkouts;
     private FrameLayout btnNotifications;
-    private TextView tvNotificationBadge;
+    private boolean showingWorkouts = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +73,19 @@ public class TraineeHomeActivity extends ComponentActivity {
 
         btnLogout = findViewById(R.id.btnLogout);
 
-        // NEW:  Workout views
         rvWorkouts = findViewById(R.id.rvWorkouts);
         emptyStateWorkouts = findViewById(R.id.emptyStateWorkouts);
 
         workoutAdapter = new WorkoutAdapter();
         rvWorkouts.setLayoutManager(new LinearLayoutManager(this));
         rvWorkouts.setAdapter(workoutAdapter);
+        rvWorkouts.setVisibility(View.GONE);
+        emptyStateWorkouts.setVisibility(View. GONE);
+        btnNotifications = findViewById(R.id.btnNotifications);
+        tvNotificationBadge = findViewById(R.id.tvNotificationBadge);
+
+        btnCoachScheduled = findViewById(R. id.btnCoachScheduled);
+        tvCoachScheduledBadge = findViewById(R.id. tvCoachScheduledBadge);
 
         btnNotifications = findViewById(R.id.btnNotifications);
         tvNotificationBadge = findViewById(R.id.tvNotificationBadge);
@@ -91,6 +103,7 @@ public class TraineeHomeActivity extends ComponentActivity {
         btnCategoryRunning.setOnClickListener(v -> startTrackingActivity("run"));
         btnCategoryWalking.setOnClickListener(v -> startTrackingActivity("walk"));
 
+        btnCoachScheduled.setOnClickListener(v -> showUpcomingWorkoutsDialog());
         // Bottom Navigation
         navShoeStore.setOnClickListener(v -> startActivity(new Intent(this, ShopActivity.class)));
 
@@ -110,6 +123,27 @@ public class TraineeHomeActivity extends ComponentActivity {
 
         // Notifications
         btnNotifications.setOnClickListener(v -> openMessagesScreen());
+    }
+
+    private void showUpcomingWorkoutsDialog() {
+        List<WorkoutAdapter.WorkoutItem> upcomingWorkouts = getUpcomingWorkouts();
+        UpcomingWorkoutsDialog dialog = UpcomingWorkoutsDialog.newInstance(upcomingWorkouts);
+        dialog.show(getSupportFragmentManager(), "UpcomingWorkoutsDialog");
+    }
+
+    private List<WorkoutAdapter.WorkoutItem> getUpcomingWorkouts() {
+        List<WorkoutAdapter.WorkoutItem> allWorkouts = workoutAdapter.getWorkouts();
+        List<WorkoutAdapter.WorkoutItem> upcoming = new ArrayList<>();
+
+        if (allWorkouts != null) {
+            for (WorkoutAdapter. WorkoutItem workout : allWorkouts) {
+                if (isUpcomingWorkout(workout.date, workout.time)) {
+                    upcoming.add(workout);
+                }
+            }
+        }
+
+        return upcoming;
     }
 
     private void fetchUnreadMessageCount() {
@@ -251,34 +285,70 @@ public class TraineeHomeActivity extends ComponentActivity {
 
         db.collection("workouts")
                 .whereArrayContains("traineeIds", uid)
-                // Remove the orderBy for now
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    List<WorkoutAdapter.WorkoutItem> workouts = new ArrayList<>();
+                    List<WorkoutAdapter.WorkoutItem> allWorkouts = new ArrayList<>();
+                    List<WorkoutAdapter.WorkoutItem> upcomingWorkouts = new ArrayList<>();
 
-                    for (com. google.firebase.firestore. QueryDocumentSnapshot doc : querySnapshot) {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : querySnapshot) {
                         String type = doc.getString("type");
                         String date = doc.getString("date");
-                        String time = doc.getString("time");
-                        String location = doc. getString("location");
+                        String time = doc. getString("time");
+                        String location = doc.getString("location");
 
-                        workouts.add(new WorkoutAdapter.WorkoutItem(type, date, time, location));
+                        WorkoutAdapter.WorkoutItem workout = new WorkoutAdapter.WorkoutItem(type, date, time, location);
+                        allWorkouts.add(workout);
+
+                        // Filter upcoming workouts
+                        if (isUpcomingWorkout(date, time)) {
+                            upcomingWorkouts.add(workout);
+                        }
                     }
 
-                    workoutAdapter. setWorkouts(workouts);
+                    // Set all workouts to adapter (we'll filter when showing dialog)
+                    workoutAdapter. setWorkouts(allWorkouts);
 
-                    // Show/hide empty state
-                    if (workouts. isEmpty()) {
-                        rvWorkouts.setVisibility(View. GONE);
-                        emptyStateWorkouts.setVisibility(View.VISIBLE);
-                    } else {
-                        rvWorkouts. setVisibility(View.VISIBLE);
-                        emptyStateWorkouts.setVisibility(View. GONE);
-                    }
+                    // Update badge with upcoming count only
+                    updateCoachScheduledBadge(upcomingWorkouts.size());
+
+                    // Keep workouts hidden (they're shown in dialog only)
+                    rvWorkouts. setVisibility(View.GONE);
+                    emptyStateWorkouts.setVisibility(View. GONE);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error loading workouts:  " + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 });
+    }
+
+    private void updateCoachScheduledBadge(int count) {
+        if (count > 0) {
+            tvCoachScheduledBadge.setText(String.valueOf(count));
+            tvCoachScheduledBadge.setVisibility(View. VISIBLE);
+        } else {
+            tvCoachScheduledBadge.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isUpcomingWorkout(String dateStr, String timeStr) {
+        try {
+            // Assuming date format is "dd/MM/yyyy" or similar - adjust based on your actual format
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale. getDefault());
+            Date workoutDate = dateFormat.parse(dateStr);
+
+            if (workoutDate == null) return false;
+
+            // Get current date without time
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar.SECOND, 0);
+            today.set(Calendar.MILLISECOND, 0);
+
+            return workoutDate.getTime() >= today.getTimeInMillis();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return true;
+        }
     }
 }
