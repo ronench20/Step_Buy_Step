@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityCommon;
 
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +13,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.ActivityTrainee.TraineeHistoryScreen.HistoryTraineeActivity;
+import com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen.TraineeHomeActivity;
+import com.example.stepbuystep.ActivityTrainee.TraineeStoreScreen.ShopActivity;
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.LeaderboardAdapter;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;

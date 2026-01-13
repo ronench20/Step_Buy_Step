@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityCoach.CoachHomeScreen;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.TraineeSelectionAdapter;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;

@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx. recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.WorkoutAdapter;
 import com.google.android.material.bottomsheet. BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;

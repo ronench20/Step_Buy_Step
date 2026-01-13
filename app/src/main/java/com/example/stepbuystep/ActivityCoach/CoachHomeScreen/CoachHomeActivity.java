@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityCoach.CoachHomeScreen;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -13,6 +13,13 @@ import android.widget. Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
+import com.example.stepbuystep.ActivityCoach.CoachSettingsScreen.CoachSettingsActivity;
+import com.example.stepbuystep.ActivityCoach.CoachCreateScreen.CreateWorkoutActivity;
+import com.example.stepbuystep.ActivityCoach.CoachHistoryScreen.HistoryCoachActivity;
+import com.example.stepbuystep.ActivityCommon.LeaderBoardActivity;
+import com.example.stepbuystep.ActivityCommon.LoginActivity;
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.UpcomingWorkoutAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;

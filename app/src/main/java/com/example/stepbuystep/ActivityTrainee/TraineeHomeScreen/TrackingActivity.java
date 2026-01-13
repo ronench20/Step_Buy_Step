@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -20,6 +20,8 @@ import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
+
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.service.TrackingService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;

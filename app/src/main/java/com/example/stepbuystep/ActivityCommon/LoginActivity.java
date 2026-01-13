@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityCommon;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,12 @@ import android.widget.Toast;
 import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+
+import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.CoachHomeActivity;
+import com.example.stepbuystep.ActivityTrainee.TraineeReg.PendingApprovalActivity;
+import com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen.TraineeHomeActivity;
+import com.example.stepbuystep.R;
+import com.example.stepbuystep.ActivityTrainee.TraineeReg.ReEnterCoachIdActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

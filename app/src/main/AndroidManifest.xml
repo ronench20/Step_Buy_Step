@@ -22,10 +22,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StepBuyStep" >
         <activity
-            android:name=".HistoryCoachActivity"
+            android:name=".ActivityCoach.CoachHistoryScreen.HistoryCoachActivity"
             android:exported="false" />
         <activity
-            android:name=".HistoryTraineeActivity"
+            android:name=".ActivityTrainee.TraineeHistoryScreen.HistoryTraineeActivity"
             android:exported="false" />
         <activity
             android:name=".ui.theme.HistoryTraineeActivityActivity"
@@ -45,58 +45,58 @@
             android:exported="false"
             android:foregroundServiceType="location" />
         <activity
-            android:name=".MessagesActivity"
+            android:name=".ActivityCoach.CoachHomeScreen.MessagesActivity"
             android:exported="false" />
         <activity
-            android:name=".ShopActivity"
+            android:name=".ActivityTrainee.TraineeStoreScreen.ShopActivity"
             android:exported="false" />
         <activity
-            android:name=".TrackingActivity"
+            android:name=".ActivityTrainee.TraineeHomeScreen.TrackingActivity"
             android:exported="false" />
         <activity
-            android:name=".CreateWorkoutActivity"
+            android:name=".ActivityCoach.CoachCreateScreen.CreateWorkoutActivity"
             android:exported="false" />
         <activity
-            android:name=".LeaderBoardActivity"
+            android:name=".ActivityCommon.LeaderBoardActivity"
             android:exported="false" />
         <activity
-            android:name=".CoachRegisterActivity"
+            android:name=".ActivityCoach.CoachRegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".TraineeHomeActivity"
+            android:name=".ActivityTrainee.TraineeHomeScreen.TraineeHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".CoachHomeActivity"
+            android:name=".ActivityCoach.CoachHomeScreen.CoachHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".CoachSettingsActivity"
+            android:name=".ActivityCoach.CoachSettingsScreen.CoachSettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".EnterInfoActivity"
+            android:name=".ActivityTrainee.TraineeReg.EnterInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".ActivityCommon.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ActivityCommon.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".PendingRequestsActivity"
+            android:name=".ActivityCoach.CoachHomeScreen.PendingRequestsActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ActivityCommon.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".PendingApprovalActivity"
+            android:name=".ActivityTrainee.TraineeReg.PendingApprovalActivity"
             android:exported="false" />
         <activity
-            android:name=".ReEnterCoachIdActivity"
+            android:name=".ActivityTrainee.TraineeReg.ReEnterCoachIdActivity"
             android:exported="false" />
         <activity
-            android:name=".ManageTeamMembersActivity"
+            android:name=".ActivityCoach.CoachSettingsScreen.ManageTeamMembersActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".ActivityCommon.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.StepBuyStep">
             <intent-filter>
@@ -105,7 +105,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MapPickerActivity"
+            android:name=".ActivityCoach.CoachCreateScreen.MapPickerActivity"
             android:exported="false" />
 
     </application>

@@ -1,4 +1,4 @@
-package com. example.stepbuystep;
+package com.example.stepbuystep.ActivityCoach.CoachHistoryScreen;
 
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.LinearLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.HistoryAdapter;
 import com.example.stepbuystep.model. HistoryItem;
 import com.google.firebase.auth.FirebaseAuth;

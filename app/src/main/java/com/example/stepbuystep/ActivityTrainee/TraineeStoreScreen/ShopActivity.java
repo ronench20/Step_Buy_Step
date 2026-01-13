@@ -1,16 +1,15 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityTrainee.TraineeStoreScreen;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.ComponentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.ActivityTrainee.BaseTraineeActivity;
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.ShopAdapter;
 import com.example.stepbuystep.model.Equipment;
 import com.google.firebase.auth.FirebaseAuth;

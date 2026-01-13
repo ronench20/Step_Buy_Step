@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityCoach.CoachSettingsScreen;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
+import com.example.stepbuystep.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 

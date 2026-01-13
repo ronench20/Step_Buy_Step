@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityTrainee;
 
 import android.content. Intent;
 import android.os. Bundle;
@@ -9,6 +9,12 @@ import android. widget.TextView;
 
 import androidx. appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import com.example.stepbuystep.ActivityTrainee.TraineeHistoryScreen.HistoryTraineeActivity;
+import com.example.stepbuystep.ActivityCommon.LeaderBoardActivity;
+import com.example.stepbuystep.R;
+import com.example.stepbuystep.ActivityTrainee.TraineeStoreScreen.ShopActivity;
+import com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen.TraineeHomeActivity;
 
 public abstract class BaseTraineeActivity extends AppCompatActivity {
 

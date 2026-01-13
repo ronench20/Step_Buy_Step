@@ -1,9 +1,11 @@
-package com.example.stepbuystep
+package com.example.stepbuystep.ActivityCommon
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.ComponentActivity
+import com.example.stepbuystep.ActivityCoach.CoachRegisterActivity
+import com.example.stepbuystep.R
 
 class MainActivity : ComponentActivity() {
 

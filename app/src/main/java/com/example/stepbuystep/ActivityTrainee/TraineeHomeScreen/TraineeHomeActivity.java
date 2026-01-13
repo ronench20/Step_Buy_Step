@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +8,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.MessagesActivity;
+import com.example.stepbuystep.ActivityTrainee.BaseTraineeActivity;
+import com.example.stepbuystep.ActivityCommon.LoginActivity;
+import com.example.stepbuystep.ActivityTrainee.TraineeReg.PendingApprovalActivity;
+import com.example.stepbuystep.R;
+import com.example.stepbuystep.ActivityTrainee.TraineeReg.ReEnterCoachIdActivity;
 import com.example.stepbuystep.adapter.WorkoutAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;

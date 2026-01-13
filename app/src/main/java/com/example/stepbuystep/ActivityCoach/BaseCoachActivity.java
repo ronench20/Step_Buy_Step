@@ -1,4 +1,4 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityCoach;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,12 @@ import android.widget.TextView;
 
 import androidx.appcompat.app. AppCompatActivity;
 import androidx. core.content.ContextCompat;
+
+import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.CoachHomeActivity;
+import com.example.stepbuystep.ActivityCoach.CoachSettingsScreen.CoachSettingsActivity;
+import com.example.stepbuystep.ActivityCoach.CoachCreateScreen.CreateWorkoutActivity;
+import com.example.stepbuystep.ActivityCoach.CoachHistoryScreen.HistoryCoachActivity;
+import com.example.stepbuystep.R;
 
 public abstract class BaseCoachActivity extends AppCompatActivity {
 

@@ -1,25 +1,23 @@
-package com.example.stepbuystep;
+package com.example.stepbuystep.ActivityCoach.CoachCreateScreen;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.activity.ComponentActivity;
-
+import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
+import com.example.stepbuystep.ActivityCoach.CoachHistoryScreen.HistoryCoachActivity;
+import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.CoachHomeActivity;
+import com.example.stepbuystep.ActivityCoach.CoachSettingsScreen.CoachSettingsActivity;
+import com.example.stepbuystep.ActivityCommon.LoginActivity;
+import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.TraineeSelectionAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
