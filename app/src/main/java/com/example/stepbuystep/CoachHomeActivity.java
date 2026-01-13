@@ -77,10 +77,10 @@ public class CoachHomeActivity extends BaseCoachActivity {
         rvUpcoming = findViewById(R.id.rvUpcoming);
         cardNoUpcoming = findViewById(R.id.cardNoUpcoming);
 
-        navMyAthletes = findViewById(R.id. navDashboardCoach);
+        navMyAthletes = findViewById(R.id.navDashboardCoach);
         navMyHistory = findViewById(R.id.navMyHistory);
         navCreate = findViewById(R. id.navCreate);
-        navSettings = findViewById(R.id. navSettings);
+        navSettings = findViewById(R.id.navSettings);
     }
 
     private void setupRecyclerView() {
@@ -112,7 +112,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
         });
 
         cardPendingRequests.setOnClickListener(v ->
-                startActivity(new Intent(this, PendingRequestsActivity. class))
+                startActivity(new Intent(this, PendingRequestsActivity.class))
         );
 
         navCreate.setOnClickListener(v ->
