@@ -1,4 +1,4 @@
-package com.example.stepbuystep.ActivityCoach.CoachHomeScreen;
+package com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen;
 
 import android.os.Bundle;
 import android.view.View;
@@ -72,7 +72,7 @@ public class MessagesActivity extends AppCompatActivity {
                 .orderBy("timestamp", Query.Direction. DESCENDING)
                 .addSnapshotListener((querySnapshot, error) -> {
                     if (error != null) {
-                        Toast.makeText(this, "Error loading messages", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "Error loading messages", Toast.LENGTH_SHORT).show();
                         return;
                     }
 

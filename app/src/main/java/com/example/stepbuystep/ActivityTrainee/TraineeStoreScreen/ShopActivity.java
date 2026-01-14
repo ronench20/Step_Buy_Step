@@ -29,7 +29,7 @@ public class ShopActivity extends BaseTraineeActivity {
     private TextView tvCoinBalance;
     private TextView tvCurrentShoeName, tvCurrentShoeLevel, tvCurrentMultiplier;
     private RecyclerView rvShoes;
-    private View btnBack;
+    //private View btnBack;
     private long currentCoins = 0;
     private Map<String, Integer> currentInventoryTiers = new HashMap<>();
     private List<Equipment> availableUpgrades = new ArrayList<>();
@@ -45,7 +45,7 @@ public class ShopActivity extends BaseTraineeActivity {
 
         initViews();
         setupRecyclerView();
-        setupListeners();
+        //setupListeners();
         setupNavigationBar(NavItem.SHOE_STORE);
         loadUserData();
     }
@@ -56,7 +56,7 @@ public class ShopActivity extends BaseTraineeActivity {
         tvCurrentShoeLevel = findViewById(R.id.tvCurrentShoeLevel);
         tvCurrentMultiplier = findViewById(R.id.tvCurrentMultiplier);
         rvShoes = findViewById(R.id.rvShoes);
-        btnBack = findViewById(R.id.btnBack);
+        //btnBack = findViewById(R.id.btnBack);
 
     }
 
@@ -67,9 +67,9 @@ public class ShopActivity extends BaseTraineeActivity {
         rvShoes.setAdapter(adapter);
     }
 
-    private void setupListeners() {
-        btnBack.setOnClickListener(v -> finish());
-    }
+    //private void setupListeners() {
+    //    btnBack.setOnClickListener(v -> finish());
+    //}
 
     private void loadUserData() {
         String uid = auth.getUid();

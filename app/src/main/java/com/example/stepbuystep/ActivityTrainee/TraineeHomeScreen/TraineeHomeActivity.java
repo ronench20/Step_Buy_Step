@@ -12,7 +12,6 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.MessagesActivity;
 import com.example.stepbuystep.ActivityTrainee.BaseTraineeActivity;
 import com.example.stepbuystep.ActivityCommon.LoginActivity;
 import com.example.stepbuystep.ActivityTrainee.TraineeReg.PendingApprovalActivity;

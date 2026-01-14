@@ -21,7 +21,6 @@ import java.util.List;
 
 public class HistoryCoachActivity extends BaseCoachActivity {
 
-    private LinearLayout btnBack;
     private RecyclerView rvWorkouts;
     private View cardEmpty;
 
@@ -44,11 +43,9 @@ public class HistoryCoachActivity extends BaseCoachActivity {
     }
 
     private void initViews() {
-        btnBack = findViewById(R.id.btnBack);
         rvWorkouts = findViewById(R.id.rvWorkouts);
         cardEmpty = findViewById(R.id.cardEmpty);
 
-        btnBack.setOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {

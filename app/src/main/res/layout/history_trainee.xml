@@ -22,7 +22,7 @@
 
             <!-- Header -->
             <FrameLayout
-                android:id="@+id/header"
+                android:id="@+id/headerTrainingHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_header_gradient">
@@ -33,58 +33,50 @@
                     android:orientation="vertical"
                     android:padding="24dp">
 
-                    <!-- Back button (absolute left/top in web => overlay in FrameLayout; here it sits first with padding close enough) -->
+                    <!-- Top Bar (optional: keep empty but consistent spacing) -->
                     <LinearLayout
-                        android:id="@+id/btnBack"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
-                        android:background="@drawable/bg_back_btn"
-                        android:clickable="true"
-                        android:focusable="true">
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp">
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/icBack"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_arrow_left_24"
-                            android:tint="#FFFFFF" />
-
-                        <TextView
-                            android:id="@+id/tvBack"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="Back"
-                            android:textSize="12sp"
-                            android:textColor="#FFFFFF" />
+                            android:layout_weight="1" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tvTitle"
-                        android:layout_width="wrap_content"
+                    <!-- Content -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="18dp"
-                        android:text="Training History"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        android:textColor="#FFFFFF" />
+                        android:layout_marginTop="14dp"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvSubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="Track your fitness journey"
-                        android:textSize="14sp"
-                        android:textColor="#CCFFFFFF" />
+                        <TextView
+                            android:id="@+id/tvTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Training History"
+                            android:textColor="#FFFFFF"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSubtitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Track your fitness journey"
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </FrameLayout>
+
 
             <!-- Body padding (p-4 space-y-6) -->
             <LinearLayout

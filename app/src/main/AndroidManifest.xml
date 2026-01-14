@@ -45,7 +45,7 @@
             android:exported="false"
             android:foregroundServiceType="location" />
         <activity
-            android:name=".ActivityCoach.CoachHomeScreen.MessagesActivity"
+            android:name=".ActivityTrainee.TraineeHomeScreen.MessagesActivity"
             android:exported="false" />
         <activity
             android:name=".ActivityTrainee.TraineeStoreScreen.ShopActivity"

@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util. Locale;
 
 public class HistoryTraineeActivity extends BaseTraineeActivity {
-    private LinearLayout btnBack;
     private TextView tvTotalWorkouts, tvTotalDistance;
     private TextView tvTotalCalories, tvTotalPoints;
     private RecyclerView rvHistory;
@@ -46,13 +45,12 @@ public class HistoryTraineeActivity extends BaseTraineeActivity {
         auth = FirebaseAuth.getInstance();
 
         initViews();
-        setupNavigationBar(NavItem. HISTORY);
+        setupNavigationBar(NavItem.HISTORY);
         setupRecyclerView();
         fetchHistory();
     }
 
     private void initViews() {
-        btnBack = findViewById(R.id.btnBack);
         tvTotalWorkouts = findViewById(R.id.tvTotalWorkouts);
         tvTotalDistance = findViewById(R.id.tvTotalDistance);
         tvTotalCalories = findViewById(R.id.tvTotalCalories);
@@ -60,7 +58,7 @@ public class HistoryTraineeActivity extends BaseTraineeActivity {
         rvHistory = findViewById(R.id.rvHistory);
         cardEmpty = findViewById(R.id.cardEmpty);
 
-        btnBack.setOnClickListener(v -> finish());
+        //btnBack.setOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {

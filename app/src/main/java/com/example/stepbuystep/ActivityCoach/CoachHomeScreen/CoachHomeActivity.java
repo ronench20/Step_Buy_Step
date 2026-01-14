@@ -35,6 +35,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
     private FirebaseFirestore db;
 
     private TextView tvCoachIdShort;
+    private TextView tvUserName;
     private TextView tvActiveAthletesCount;
     private TextView tvPendingRequestsCount;
     private LinearLayout cardActiveAthletes;
@@ -73,6 +74,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
     }
 
     private void initViews() {
+        tvUserName = findViewById(R.id. tvUserName);
         tvCoachIdShort = findViewById(R.id.tvCoachIdShort);
         tvActiveAthletesCount = findViewById(R.id.tvActiveAthletesCount);
         cardActiveAthletes = findViewById(R.id.cardActiveAthletes);
@@ -151,9 +153,9 @@ public class CoachHomeActivity extends BaseCoachActivity {
         String uid = auth.getCurrentUser().getUid();
 
         db.collection("users").document(uid).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Long cid = documentSnapshot.getLong("coachID");
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        Long cid = doc.getLong("coachID");
                         if (cid != null) {
                             coachIdValue = cid;
                             tvCoachIdShort.setText("ID: " + coachIdValue);
@@ -162,6 +164,13 @@ public class CoachHomeActivity extends BaseCoachActivity {
                         } else {
                             tvCoachIdShort.setText("ID: N/A");
                         }
+                        String email = doc.getString("email");
+                        String name = email != null ? email.split("@")[0] : "Trainee";
+                        if (name.length() > 0) {
+                            name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                        }
+
+                        tvUserName.setText(name);
                     }
                 });
     }
@@ -194,6 +203,8 @@ public class CoachHomeActivity extends BaseCoachActivity {
                 });
     }
 
+
+
     private void fetchUpcomingWorkouts() {
         if (auth.getCurrentUser() == null) return;
         String uid = auth.getCurrentUser().getUid();
@@ -215,6 +226,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
                         if (date == null) date = "";
                         if (time == null) time = "";
                         if (location == null) location = "";
+
 
                         items.add(new UpcomingWorkoutAdapter.WorkoutItem(doc.getId(), type, date, time, location, 0));
                     }

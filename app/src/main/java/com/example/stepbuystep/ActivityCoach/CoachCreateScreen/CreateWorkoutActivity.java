@@ -38,9 +38,7 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
 
     private EditText etType, etDate, etTime, etLocation;
     private Button btnPublishWorkout;
-    private ImageView btnBack;
-    private LinearLayout btnLogout;
-    private LinearLayout navDashboardCoach, navMyHistory, navCreate, navSettings;
+    private LinearLayout navDashboardCoach, navMyHistory, navSettings;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
@@ -93,8 +91,6 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
         etTime = findViewById(R.id.etWorkoutTime);
         etLocation = findViewById(R.id.etWorkoutLocation);
         btnPublishWorkout = findViewById(R.id.btnPublishWorkout);
-        btnBack = findViewById(R.id.btnBack);
-        btnLogout = findViewById(R.id. btnLogout);
 
         navDashboardCoach = findViewById(R.id.navDashboardCoach);
         navMyHistory = findViewById(R.id.navMyHistory);
@@ -119,13 +115,6 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
     }
 
     private void setupListeners() {
-        btnBack.setOnClickListener(v -> finish());
-
-        btnLogout.setOnClickListener(v -> {
-            auth.signOut();
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        });
 
         etDate.setOnClickListener(v -> showDatePicker());
         etTime.setOnClickListener(v -> showTimePicker());
