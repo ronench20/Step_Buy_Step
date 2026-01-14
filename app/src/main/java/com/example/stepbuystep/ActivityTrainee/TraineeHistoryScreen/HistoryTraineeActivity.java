@@ -2,7 +2,6 @@ package com.example.stepbuystep.ActivityTrainee.TraineeHistoryScreen;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,7 +38,7 @@ public class HistoryTraineeActivity extends BaseTraineeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.history_trainee);
+        setContentView(R.layout.activity_trainee_history);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();

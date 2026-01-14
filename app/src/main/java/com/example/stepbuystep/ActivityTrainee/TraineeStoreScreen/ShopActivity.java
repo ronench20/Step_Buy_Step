@@ -1,7 +1,6 @@
 package com.example.stepbuystep.ActivityTrainee.TraineeStoreScreen;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +37,7 @@ public class ShopActivity extends BaseTraineeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shop);
+        setContentView(R.layout.activity_trainee_shop);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();

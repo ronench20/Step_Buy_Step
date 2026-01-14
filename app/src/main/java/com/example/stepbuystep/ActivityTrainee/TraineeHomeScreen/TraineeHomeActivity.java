@@ -48,7 +48,7 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.trainee_home);
+        setContentView(R.layout.activity_trainee_home);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();

@@ -2,7 +2,6 @@ package com.example.stepbuystep.ActivityCoach.CoachHistoryScreen;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +30,7 @@ public class HistoryCoachActivity extends BaseCoachActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.history_coach);
+        setContentView(R.layout.activity_coach_history);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth. getInstance();

@@ -59,7 +59,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout. coach_home);
+        setContentView(R.layout.activity_coach_home);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();

@@ -17,18 +17,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header -->
+
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:background="@drawable/bg_header_gradient"
                 android:padding="24dp">
 
-                <!-- Title + subtitle (pt-8) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="45dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -37,7 +36,7 @@
                         android:text="Workout History"
                         android:textColor="@android:color/white"
                         android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -45,12 +44,11 @@
                         android:layout_marginTop="6dp"
                         android:text="Track and validate attendance"
                         android:textColor="#CCFFFFFF"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
                 </LinearLayout>
 
             </FrameLayout>
 
-            <!-- Content -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

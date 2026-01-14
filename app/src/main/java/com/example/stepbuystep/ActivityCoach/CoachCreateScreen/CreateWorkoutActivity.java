@@ -8,7 +8,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -16,7 +15,6 @@ import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
 import com.example.stepbuystep.ActivityCoach.CoachHistoryScreen.HistoryCoachActivity;
 import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.CoachHomeActivity;
 import com.example.stepbuystep.ActivityCoach.CoachSettingsScreen.CoachSettingsActivity;
-import com.example.stepbuystep.ActivityCommon.LoginActivity;
 import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.TraineeSelectionAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,7 +70,7 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R. layout.activity_create_workout);
+        setContentView(R. layout.activity_coach_create_workout);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth. getInstance();
