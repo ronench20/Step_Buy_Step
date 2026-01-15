@@ -55,8 +55,6 @@ public class ShopActivity extends BaseTraineeActivity {
         tvCurrentShoeLevel = findViewById(R.id.tvCurrentShoeLevel);
         tvCurrentMultiplier = findViewById(R.id.tvCurrentMultiplier);
         rvShoes = findViewById(R.id.rvShoes);
-        //btnBack = findViewById(R.id.btnBack);
-
     }
 
     private void setupRecyclerView() {
