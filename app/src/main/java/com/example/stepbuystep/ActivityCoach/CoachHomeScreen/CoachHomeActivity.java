@@ -14,9 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
-import com.example.stepbuystep.ActivityCoach.CoachSettingsScreen.CoachSettingsActivity;
-import com.example.stepbuystep.ActivityCoach.CoachCreateScreen.CreateWorkoutActivity;
-import com.example.stepbuystep.ActivityCoach.CoachHistoryScreen.HistoryCoachActivity;
 import com.example.stepbuystep.ActivityCommon.LeaderBoardActivity;
 import com.example.stepbuystep.ActivityCommon.LoginActivity;
 import com.example.stepbuystep.R;
@@ -47,12 +44,6 @@ public class CoachHomeActivity extends BaseCoachActivity {
     private RecyclerView rvUpcoming;
     private View cardNoUpcoming;
 
-    // Bottom Nav
-    private LinearLayout navMyAthletes;
-    private LinearLayout navMyHistory;
-    private LinearLayout navCreate;
-    private LinearLayout navSettings;
-
     private long coachIdValue = 0;
     private UpcomingWorkoutAdapter upcomingAdapter;
 
@@ -65,16 +56,15 @@ public class CoachHomeActivity extends BaseCoachActivity {
         db = FirebaseFirestore.getInstance();
 
         initViews();
+        setupNavigationBar(BaseCoachActivity.NavItem.DASH_COACH);
         setupRecyclerView();
         setupListeners();
         fetchCoachData();
-        setupNavigationBar(BaseCoachActivity. NavItem.DASH_COACH);
-
         fetchUpcomingWorkouts();
     }
 
     private void initViews() {
-        tvUserName = findViewById(R.id. tvUserName);
+        tvUserName = findViewById(R.id.tvUserName);
         tvCoachIdShort = findViewById(R.id.tvCoachIdShort);
         tvActiveAthletesCount = findViewById(R.id.tvActiveAthletesCount);
         cardActiveAthletes = findViewById(R.id.cardActiveAthletes);
@@ -87,16 +77,11 @@ public class CoachHomeActivity extends BaseCoachActivity {
         btnLogout = findViewById(R. id.btnLogout);
         rvUpcoming = findViewById(R.id.rvUpcoming);
         cardNoUpcoming = findViewById(R.id.cardNoUpcoming);
-
-        navMyAthletes = findViewById(R.id.navDashboardCoach);
-        navMyHistory = findViewById(R.id.navMyHistory);
-        navCreate = findViewById(R. id.navCreate);
-        navSettings = findViewById(R.id.navSettings);
     }
 
     private void setupRecyclerView() {
         upcomingAdapter = new UpcomingWorkoutAdapter();
-        rvUpcoming. setLayoutManager(new LinearLayoutManager(this));
+        rvUpcoming.setLayoutManager(new LinearLayoutManager(this));
         rvUpcoming.setAdapter(upcomingAdapter);
     }
 
@@ -118,28 +103,12 @@ public class CoachHomeActivity extends BaseCoachActivity {
 
         btnBroadcastMessage.setOnClickListener(v -> showBroadcastDialog());
 
-        navMyAthletes.setOnClickListener(v -> {
-            startActivity(new Intent(this, LeaderBoardActivity.class));
-        });
-
         cardActiveAthletes.setOnClickListener(v ->
                 startActivity(new Intent(this, LeaderBoardActivity.class))
         );
 
         cardPendingRequests.setOnClickListener(v ->
                 startActivity(new Intent(this, PendingRequestsActivity.class))
-        );
-
-        navCreate.setOnClickListener(v ->
-                startActivity(new Intent(this, CreateWorkoutActivity.class))
-        );
-
-        navMyHistory.setOnClickListener(v ->
-                startActivity(new Intent(this, HistoryCoachActivity.class))
-        );
-
-        navSettings.setOnClickListener(v ->
-                startActivity(new Intent(this, CoachSettingsActivity.class))
         );
     }
 

@@ -108,12 +108,10 @@ public class LeaderBoardActivity extends AppCompatActivity{
         if (bottomNavigationBar == null) return;
 
         if ("trainee".equals(role)) {
-            // Show navigation bar for trainees
             bottomNavigationBar.setVisibility(View.VISIBLE);
             btnBack.setVisibility(View.GONE);
             setupTraineeNavigation();
         } else {
-            // Hide navigation bar for coaches
             bottomNavigationBar.setVisibility(View.GONE);
             btnBack.setVisibility(View.VISIBLE);
 

@@ -5,10 +5,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
 import com.example.stepbuystep.R;
@@ -17,26 +18,23 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class CoachSettingsActivity extends BaseCoachActivity {
 
-    private Button btnLogout;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    // Header
-    private LinearLayout btnBack;
 
     // Profile card
-    private TextView tvName;      // XML: tvFullName
-    private TextView tvEmail;     // XML: tvEmail
-    private TextView tvCoachId;   // XML: badgeCoachId (click to copy)
+    private TextView tvName;
+    private TextView tvEmail;
+    private TextView tvCoachId;
 
     // Subscription card
-    private TextView tvPlanName;      // XML: tvTier
-    private TextView badgeStatus;     // XML: badgeActive
-    private TextView tvAthletesUsage; // XML: tvAthletesUsage
+    private TextView tvPlanName;
+    private TextView badgeStatus;
+    private TextView tvAthletesUsage;
 
     // Rows
-    private TextView tvAthletesCount; // XML: tvAthletesCount
+    private TextView tvAthletesCount;
     private LinearLayout rowManageTeam, rowEditGroup, rowChangeSubscription;
 
     private long coachIdValue = 0;
@@ -56,10 +54,6 @@ public class CoachSettingsActivity extends BaseCoachActivity {
     }
 
     private void initViews() {
-        //btnLogout = findViewById(R.id.btnLogout);
-
-        // Header
-        btnBack = findViewById(R.id.btnBack);
 
         // Profile card (match XML ids)
         tvName = findViewById(R.id.tvFullName);
@@ -79,8 +73,6 @@ public class CoachSettingsActivity extends BaseCoachActivity {
     }
 
     private void setupListeners() {
-        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
-
         // Click coach id badge to copy
         if (tvCoachId != null) {
             tvCoachId.setOnClickListener(v -> {

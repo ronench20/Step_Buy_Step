@@ -56,8 +56,6 @@ public class HistoryTraineeActivity extends BaseTraineeActivity {
         tvTotalPoints = findViewById(R.id.tvTotalPoints);
         rvHistory = findViewById(R.id.rvHistory);
         cardEmpty = findViewById(R.id.cardEmpty);
-
-        //btnBack.setOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {

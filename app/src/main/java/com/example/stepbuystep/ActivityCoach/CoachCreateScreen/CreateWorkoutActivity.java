@@ -12,9 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
-import com.example.stepbuystep.ActivityCoach.CoachHistoryScreen.HistoryCoachActivity;
-import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.CoachHomeActivity;
-import com.example.stepbuystep.ActivityCoach.CoachSettingsScreen.CoachSettingsActivity;
 import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.TraineeSelectionAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +33,6 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
 
     private EditText etType, etDate, etTime, etLocation;
     private Button btnPublishWorkout;
-    private LinearLayout navDashboardCoach, navMyHistory, navSettings;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
@@ -70,15 +66,15 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R. layout.activity_coach_create_workout);
+        setContentView(R.layout.activity_coach_create_workout);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth. getInstance();
 
         initViews();
         setupNavigationBar(NavItem.CREATE);
+        setupRecyclerView();
         setupListeners();
-
         loadTrainees();
 
     }
@@ -90,19 +86,11 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
         etLocation = findViewById(R.id.etWorkoutLocation);
         btnPublishWorkout = findViewById(R.id.btnPublishWorkout);
 
-        navDashboardCoach = findViewById(R.id.navDashboardCoach);
-        navMyHistory = findViewById(R.id.navMyHistory);
-        navCreate = findViewById(R.id.navCreate);
-        navSettings = findViewById(R.id.navSettings);
-
         // NEW:  Trainee selection views
         rvTrainees = findViewById(R.id.rvTrainees);
         btnDeselectAll = findViewById(R. id.btnDeselectAll);
         emptyStateTrainees = findViewById(R.id.emptyStateTrainees);
 
-        traineeAdapter = new TraineeSelectionAdapter();
-        rvTrainees.setLayoutManager(new LinearLayoutManager(this));
-        rvTrainees.setAdapter(traineeAdapter);
 
         etDate.setFocusable(false);
         etDate.setClickable(true);
@@ -110,6 +98,12 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
         etTime.setClickable(true);
         etLocation.setFocusable(false);
         etLocation.setClickable(true);
+    }
+
+    private void setupRecyclerView() {
+        traineeAdapter = new TraineeSelectionAdapter();
+        rvTrainees.setLayoutManager(new LinearLayoutManager(this));
+        rvTrainees.setAdapter(traineeAdapter);
     }
 
     private void setupListeners() {
@@ -122,18 +116,6 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
 
         btnDeselectAll.setOnClickListener(v -> traineeAdapter.deselectAll());
 
-
-        navDashboardCoach.setOnClickListener(v ->
-                startActivity(new Intent(this, CoachHomeActivity.class))
-        );
-
-        navMyHistory.setOnClickListener(v ->
-                startActivity(new Intent(this, HistoryCoachActivity.class))
-        );
-
-        navSettings.setOnClickListener(v ->
-                startActivity(new Intent(this, CoachSettingsActivity.class))
-        );
     }
 
     private void openMapPicker() {

@@ -7,8 +7,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app. AppCompatActivity;
-import androidx. core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.stepbuystep.ActivityCoach.CoachHomeScreen.CoachHomeActivity;
 import com.example.stepbuystep.ActivityCoach.CoachSettingsScreen.CoachSettingsActivity;
@@ -16,7 +16,7 @@ import com.example.stepbuystep.ActivityCoach.CoachCreateScreen.CreateWorkoutActi
 import com.example.stepbuystep.ActivityCoach.CoachHistoryScreen.HistoryCoachActivity;
 import com.example.stepbuystep.R;
 
-public abstract class BaseCoachActivity extends AppCompatActivity {
+public abstract class BaseCoachActivity extends AppCompatActivity{
 
     protected LinearLayout navDashboardCoach, navMyHistory, navCreate, navSettings;
 
@@ -33,9 +33,7 @@ public abstract class BaseCoachActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
 
-    /**
-     * Call this method after setContentView() to initialize the navigation bar
-     */
+
     protected void setupNavigationBar(NavItem currentPage) {
         navDashboardCoach = findViewById(R.id.navDashboardCoach);
         navMyHistory = findViewById(R.id. navMyHistory);
@@ -43,10 +41,10 @@ public abstract class BaseCoachActivity extends AppCompatActivity {
         navSettings = findViewById(R.id.navSettings);
 
         if (navDashboardCoach != null) {
-            navDashboardCoach. setOnClickListener(v -> navigateToPage(NavItem.DASH_COACH));
+            navDashboardCoach.setOnClickListener(v -> navigateToPage(NavItem.DASH_COACH));
         }
         if (navMyHistory != null) {
-            navMyHistory. setOnClickListener(v -> navigateToPage(NavItem.MY_HISTORY));
+            navMyHistory.setOnClickListener(v -> navigateToPage(NavItem.MY_HISTORY));
         }
         if (navCreate != null) {
             navCreate.setOnClickListener(v -> navigateToPage(NavItem.CREATE));
@@ -59,7 +57,7 @@ public abstract class BaseCoachActivity extends AppCompatActivity {
         highlightNavigationItem(currentPage);
     }
 
-    private void navigateToPage(NavItem navItem) {
+    private void navigateToPage(NavItem navItem){
         Intent intent = null;
 
         switch (navItem) {

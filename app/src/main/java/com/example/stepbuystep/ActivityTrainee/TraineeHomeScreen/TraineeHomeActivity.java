@@ -42,7 +42,7 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
     private WorkoutAdapter workoutAdapter;
     private LinearLayout emptyStateWorkouts;
     private FrameLayout btnNotifications;
-    private boolean showingWorkouts = false;
+    //private boolean showingWorkouts = false;
 
 
     @Override
@@ -55,6 +55,7 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
 
         initViews();
         setupNavigationBar(NavItem.DASHBOARD);
+        setupRecyclerView();
         setupListeners();
         loadUserData();
         fetchUnreadMessageCount();
@@ -75,10 +76,6 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
         rvWorkouts = findViewById(R.id.rvWorkouts);
         emptyStateWorkouts = findViewById(R.id.emptyStateWorkouts);
 
-        workoutAdapter = new WorkoutAdapter();
-        rvWorkouts.setLayoutManager(new LinearLayoutManager(this));
-        rvWorkouts.setAdapter(workoutAdapter);
-        rvWorkouts.setVisibility(View.GONE);
         emptyStateWorkouts.setVisibility(View. GONE);
         btnNotifications = findViewById(R.id.btnNotifications);
         tvNotificationBadge = findViewById(R.id.tvNotificationBadge);
@@ -88,6 +85,13 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
 
         btnNotifications = findViewById(R.id.btnNotifications);
         tvNotificationBadge = findViewById(R.id.tvNotificationBadge);
+    }
+
+    private void setupRecyclerView() {
+        workoutAdapter = new WorkoutAdapter();
+        rvWorkouts.setLayoutManager(new LinearLayoutManager(this));
+        rvWorkouts.setAdapter(workoutAdapter);
+        rvWorkouts.setVisibility(View.GONE);
     }
 
     private void setupListeners() {
