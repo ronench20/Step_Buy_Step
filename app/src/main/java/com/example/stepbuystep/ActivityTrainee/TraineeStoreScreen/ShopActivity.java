@@ -8,14 +8,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stepbuystep.ActivityTrainee.BaseTraineeActivity;
-import com.example.stepbuystep.R;
+import com. example.stepbuystep.R;
 import com.example.stepbuystep.adapter.ShopAdapter;
-import com.example.stepbuystep.model.Equipment;
+import com.example.stepbuystep.ActivityCommon.NotificationManager;
+import com.example.stepbuystep.model.ShoeLevel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,14 +23,14 @@ public class ShopActivity extends BaseTraineeActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
+    private NotificationManager notificationManager;
 
     private TextView tvCoinBalance;
     private TextView tvCurrentShoeName, tvCurrentShoeLevel, tvCurrentMultiplier;
     private RecyclerView rvShoes;
-    //private View btnBack;
+
     private long currentCoins = 0;
-    private Map<String, Integer> currentInventoryTiers = new HashMap<>();
-    private List<Equipment> availableUpgrades = new ArrayList<>();
+    private int currentShoeLevel = 1; // Default level 1
     private ShopAdapter adapter;
 
     @Override
@@ -41,10 +40,10 @@ public class ShopActivity extends BaseTraineeActivity {
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        notificationManager = new NotificationManager();
 
         initViews();
         setupRecyclerView();
-        //setupListeners();
         setupNavigationBar(NavItem.SHOE_STORE);
         loadUserData();
     }
@@ -52,138 +51,131 @@ public class ShopActivity extends BaseTraineeActivity {
     private void initViews() {
         tvCoinBalance = findViewById(R.id.tvCoinBalance);
         tvCurrentShoeName = findViewById(R.id.tvCurrentShoeName);
-        tvCurrentShoeLevel = findViewById(R.id.tvCurrentShoeLevel);
+        tvCurrentShoeLevel = findViewById(R. id.tvCurrentShoeLevel);
         tvCurrentMultiplier = findViewById(R.id.tvCurrentMultiplier);
         rvShoes = findViewById(R.id.rvShoes);
     }
 
     private void setupRecyclerView() {
         adapter = new ShopAdapter();
-        adapter.setListener(this::purchaseItem);
+        adapter.setListener(this::purchaseShoe);
         rvShoes.setLayoutManager(new LinearLayoutManager(this));
         rvShoes.setAdapter(adapter);
     }
-
-    //private void setupListeners() {
-    //    btnBack.setOnClickListener(v -> finish());
-    //}
 
     private void loadUserData() {
         String uid = auth.getUid();
         if (uid == null) return;
 
         db.collection("users").document(uid).addSnapshotListener((doc, e) -> {
-            if (e != null) return;
-            if (doc != null && doc.exists()) {
-                Long coins = doc.getLong("coin_balance");
-                currentCoins = (coins != null) ? coins : 0;
-                tvCoinBalance.setText(String.valueOf(currentCoins));
+            if (e != null || doc == null || !doc.exists()) return;
 
-                fetchInventoryAndLoadShop(uid);
-            }
+            Long coins = doc.getLong("coin_balance");
+            currentCoins = (coins != null) ? coins : 0;
+            tvCoinBalance.setText(String.valueOf(currentCoins));
+
+            // Get current shoe level from inventory
+            fetchCurrentShoeLevel(uid);
         });
     }
 
-    private void fetchInventoryAndLoadShop(String uid) {
-        currentInventoryTiers.clear();
-        currentInventoryTiers.put("walking_shoes", 0);
-        currentInventoryTiers.put("running_shoes", 0);
-
-        final String[] bestName = {"Basic Runner"};
-        final int[] bestTier = {1};
-        final double[] bestMult = {1.0};
-        final boolean[] foundBest = {false};
-
+    private void fetchCurrentShoeLevel(String uid) {
         db.collection("users").document(uid).collection("inventory")
+                .orderBy("tier", com.google.firebase.firestore. Query.Direction.DESCENDING)
+                .limit(1)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String type = doc.getString("type");
-                        Long tier = doc.getLong("tier");
-                        Double m = doc.getDouble("multiplier");
-                        String n = doc.getString("name");
-
-                        if (type != null && tier != null) {
-                            int currentMax = currentInventoryTiers.getOrDefault(type, 0);
-                            if (tier > currentMax) {
-                                currentInventoryTiers.put(type, tier.intValue());
-                            }
-                        }
-
-                        if (m != null && m >= bestMult[0]) {
-                            bestMult[0] = m;
-                            if (n != null) bestName[0] = n;
-                            if (tier != null) bestTier[0] = tier.intValue();
-                            foundBest[0] = true;
-                        }
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        Long tier = querySnapshot.getDocuments().get(0).getLong("tier");
+                        currentShoeLevel = (tier != null) ? tier.intValue() : 1;
+                    } else {
+                        currentShoeLevel = 1;
                     }
 
-                    if (foundBest[0]) {
-                        tvCurrentShoeName.setText(bestName[0]);
-                        tvCurrentShoeLevel.setText("Level " + bestTier[0]);
-                        tvCurrentMultiplier.setText(bestMult[0] + "x");
-                    }
-
-                    loadShopItems();
+                    updateShoeDisplay();
+                })
+                .addOnFailureListener(e -> {
+                    currentShoeLevel = 1;
+                    updateShoeDisplay();
                 });
     }
 
-    private void loadShopItems() {
-        availableUpgrades.clear();
+    private void updateShoeDisplay() {
+        // Get all shoes with their states
+        List<ShoeLevel> allShoes = ShoeProgressionManager.getAllShoesWithStates(currentShoeLevel);
+        adapter.setShoes(allShoes, currentCoins);
 
-        // Check availability logic
-        // We show next available upgrade for each type
-        addNextUpgrade("walking_shoes", "Basic Runner", currentInventoryTiers.get("walking_shoes"));
-        addNextUpgrade("running_shoes", "Sport Jogger", currentInventoryTiers.get("running_shoes"));
-
-        adapter.setItems(availableUpgrades, currentCoins);
+        // Update current shoe info display
+        ShoeLevel currentShoe = allShoes. get(currentShoeLevel - 1); // 0-indexed
+        tvCurrentShoeName.setText(currentShoe.getName());
+        tvCurrentShoeLevel.setText("Level " + currentShoe.getLevel());
+        tvCurrentMultiplier.setText(currentShoe. getMultiplier() + "x");
     }
 
-    private void addNextUpgrade(String type, String baseName, Integer currentTier) {
-        if (currentTier == null) currentTier = 0;
-        if (currentTier >= 5) return; // Cap at level 5
-
-        int nextTier = currentTier + 1;
-        int price = nextTier * 500;
-        if (type.equals("walking_shoes") && nextTier == 1) price = 0; // First walking shoe free
-
-        double multiplier = 1.0;
-        if (type.equals("walking_shoes")) multiplier = 1.0 + (nextTier * 0.2);
-        else if (type.equals("running_shoes")) multiplier = 1.0 + (nextTier * 0.5);
-
-        // Round multiplier
-        multiplier = Math.round(multiplier * 10.0) / 10.0;
-
-        Equipment item = new Equipment(type + "_" + nextTier, baseName, type, nextTier, price, multiplier);
-        availableUpgrades.add(item);
-    }
-
-    private void purchaseItem(Equipment item) {
-        if (currentCoins < item.getPrice()) {
+    private void purchaseShoe(ShoeLevel shoe) {
+        if (currentCoins < shoe.getPrice()) {
             Toast.makeText(this, "Not enough coins!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Can only buy next level
+        if (shoe.getLevel() != currentShoeLevel + 1) {
+            Toast. makeText(this, "You can only buy the next level shoe!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String uid = auth.getUid();
         if (uid == null) return;
 
+        // Transaction to purchase
         db.runTransaction(transaction -> {
-            transaction.update(db.collection("users").document(uid), "coin_balance", currentCoins - item.getPrice());
+            transaction.update(db.collection("users").document(uid),
+                    "coin_balance", currentCoins - shoe.getPrice());
 
             Map<String, Object> invItem = new HashMap<>();
-            invItem.put("type", item.getType());
-            invItem.put("tier", item.getTier());
-            invItem.put("name", item.getName());
-            invItem.put("multiplier", item.getMultiplier());
+            invItem.put("type", "shoes");
+            invItem.put("tier", shoe.getLevel());
+            invItem.put("name", shoe.getName());
+            invItem. put("multiplier", shoe.getMultiplier());
             invItem.put("purchasedAt", System.currentTimeMillis());
 
-            transaction.set(db.collection("users").document(uid).collection("inventory").document(item.getId()), invItem);
+            transaction.set(db.collection("users").document(uid)
+                    .collection("inventory")
+                    .document("shoe_" + shoe.getLevel()), invItem);
 
             return null;
         }).addOnSuccessListener(unused -> {
-            Toast.makeText(this, "Purchased " + item.getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Purchased " + shoe.getName() + "!", Toast.LENGTH_SHORT).show();
+            currentShoeLevel = shoe.getLevel();
+
+            // Send notification to group
+            sendNotificationToGroup(shoe);
+
+            updateShoeDisplay();
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Purchase failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void sendNotificationToGroup(ShoeLevel shoe) {
+        String uid = auth.getUid();
+        if (uid == null) return;
+
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(doc -> {
+                    String name = doc.getString("email");
+                    if (name != null && name.contains("@")) {
+                        name = name.split("@")[0];
+                    }
+
+                    final String buyerName = name;
+                    notificationManager.notifyGroupOnShoePurchase(uid, buyerName, shoe,
+                            (success, message) -> {
+                                // Optional: Show toast or log
+                                if (success) {
+                                    Toast.makeText(this, "Team notified!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                });
     }
 }

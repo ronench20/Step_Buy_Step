@@ -20,6 +20,7 @@ import com.example.stepbuystep.ActivityTrainee.TraineeReg.ReEnterCoachIdActivity
 import com.example.stepbuystep.adapter.WorkoutAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.ParseException;
@@ -235,35 +236,48 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
         fetchUnreadMessageCount();
     }
 
+// Find the fetchBestShoe method and update it:
+
     private void fetchBestShoe(String uid) {
-        // Find the best item in inventory to display as "Current Shoe"
         db.collection("users").document(uid).collection("inventory")
+                .orderBy("multiplier", Query.Direction.DESCENDING)
+                .limit(1)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    String bestName = "Basic Runner"; // Default
+                    String bestName = "Basic Runner";
                     long bestTier = 1;
                     double bestMult = 1.0;
-                    boolean found = false;
 
-                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                    if (!querySnapshot.isEmpty()) {
+                        com.google.firebase.firestore. DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
                         Double m = doc.getDouble("multiplier");
                         Long t = doc.getLong("tier");
                         String n = doc.getString("name");
 
-                        if (m != null && m >= bestMult) {
-                            bestMult = m;
-                            if (n != null) bestName = n;
-                            if (t != null) bestTier = t;
-                            found = true;
-                        }
+                        if (m != null) bestMult = m;
+                        if (n != null) bestName = n;
+                        if (t != null) bestTier = t;
                     }
 
-                    if (found) {
-                        tvCurrentShoeName.setText(bestName);
-                        tvCurrentShoeLevel.setText("Level " + bestTier);
-                        tvMultiplier.setText(bestMult + "x");
-                    }
+                    tvCurrentShoeName.setText(bestName);
+                    tvCurrentShoeLevel.setText("Level " + bestTier);
+                    tvMultiplier.setText(bestMult + "x");
+
+                    updateMultiplierDisplays(bestMult);
                 });
+    }
+
+    private void updateMultiplierDisplays(double currentMultiplier) {
+        TextView tvWalkingMultiplier = findViewById(R.id.tvWalkingMultiplier);
+        TextView tvRunningMultiplier = findViewById(R.id.tvRunningMultiplier);
+
+        if (tvWalkingMultiplier != null) {
+            tvWalkingMultiplier.setText(String. format("%.0f coins/km", 100 * currentMultiplier));
+        }
+
+        if (tvRunningMultiplier != null) {
+            tvRunningMultiplier.setText(String.format("%.0f coins/km", 200 * currentMultiplier));
+        }
     }
 
     private void loadWorkouts() {
