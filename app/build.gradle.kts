@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.invoke
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -76,4 +78,11 @@ dependencies {
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation("com.google.android.material:material:1.9.0")
+    "testImplementation"("org.mockito:mockito-core:5.11.0")
+    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation ("androidx.test:rules:1.5.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+
+
+
 }
