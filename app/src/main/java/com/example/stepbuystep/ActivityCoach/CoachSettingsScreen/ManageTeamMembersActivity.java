@@ -1,5 +1,6 @@
 package com.example.stepbuystep.ActivityCoach.CoachSettingsScreen;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.TeamMembersAdapter;
+import com.example.stepbuystep.model.SubscriptionTier;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -35,6 +37,10 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
     private TeamMembersAdapter adapter;
     private long coachIdValue = 0;
 
+    private String pendingTierDowngrade = null;
+    private int pendingTierMaxAthletes = 0;
+    private int athletesRemovedCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +49,12 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            pendingTierDowngrade = intent.getStringExtra("pendingTierDowngrade");
+            pendingTierMaxAthletes = intent.getIntExtra("pendingTierMaxAthletes", 0);
+        }
+
         initViews();
         setupRecyclerView();
         setupListeners();
@@ -50,10 +62,10 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        btnBack = findViewById(R.id. btnBack);
-        rvTeamMembers = findViewById(R. id.rvTeamMembers);
+        btnBack = findViewById(R.id.btnBack);
+        rvTeamMembers = findViewById(R.id.rvTeamMembers);
         emptyStateTeam = findViewById(R.id.emptyStateTeam);
-        tvTeamCount = findViewById(R. id.tvTeamCount);
+        tvTeamCount = findViewById(R.id.tvTeamCount);
     }
 
     private void setupRecyclerView() {
@@ -63,13 +75,19 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            if (pendingTierDowngrade != null && athletesRemovedCount > 0) {
+                completeTierDowngrade();
+            } else {
+                finish();
+            }
+        });
 
         adapter.setListener((userId, name) -> showRemoveConfirmation(userId, name));
     }
 
     private void loadCoachId() {
-        String uid = auth.getUid();
+        String uid = auth.getCurrentUser().getUid();
         if (uid == null) return;
 
         db.collection("users").document(uid).get()
@@ -117,15 +135,19 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
                         }
 
                         adapter.setMembers(members);
-                        tvTeamCount.setText(String. valueOf(members.size()));
+                        tvTeamCount.setText(String.valueOf(members.size()));
 
                         // Show/hide empty state
                         if (members.isEmpty()) {
                             rvTeamMembers.setVisibility(View.GONE);
-                            emptyStateTeam. setVisibility(View.VISIBLE);
+                            emptyStateTeam.setVisibility(View.VISIBLE);
                         } else {
-                            rvTeamMembers.setVisibility(View. VISIBLE);
+                            rvTeamMembers.setVisibility(View.VISIBLE);
                             emptyStateTeam.setVisibility(View.GONE);
+                        }
+
+                        if (pendingTierDowngrade != null) {
+                            checkDowngradeComplete(members.size());
                         }
                     }
                 });
@@ -149,11 +171,41 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
                 .document(userId)
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
+                    athletesRemovedCount++;  // ===== NEW: Track removals =====
                     Toast.makeText(this, name + " has been removed from your team", Toast.LENGTH_SHORT).show();
-                    // Adapter will auto-update via snapshot listener
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to remove team member", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void checkDowngradeComplete(int currentMemberCount) {
+        if (currentMemberCount <= pendingTierMaxAthletes) {
+            // Enough athletes removed!
+            Toast.makeText(this, "You can now complete the tier downgrade!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void completeTierDowngrade() {
+        String uid = auth.getCurrentUser().getUid();
+        if (uid == null) return;
+
+        SubscriptionTier tier = SubscriptionTier.getTierByName(pendingTierDowngrade);
+
+        Map<String, Object> subscriptionData = new HashMap<>();
+        subscriptionData.put("tier", tier.getTier());
+        subscriptionData.put("maxAthletes", tier.getMaxAthletes());
+        subscriptionData.put("price", tier.getPrice());
+
+        db.collection("users").document(uid)
+                .update("subscription", subscriptionData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Tier downgraded to " + pendingTierDowngrade + "!",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to downgrade tier", Toast.LENGTH_SHORT).show();
                 });
     }
 }

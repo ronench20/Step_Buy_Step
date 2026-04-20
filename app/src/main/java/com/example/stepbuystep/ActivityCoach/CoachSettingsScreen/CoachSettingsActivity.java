@@ -9,13 +9,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
 import com.example.stepbuystep.R;
 import com.example.stepbuystep.model.CoachSubscriptionHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
 
 public class CoachSettingsActivity extends BaseCoachActivity {
 
@@ -100,8 +100,51 @@ public class CoachSettingsActivity extends BaseCoachActivity {
 
         if (rowChangeSubscription != null) {
             rowChangeSubscription.setOnClickListener(v ->
-                    Toast.makeText(this, "Change Subscription: Coming soon", Toast.LENGTH_SHORT).show());
+                    showSubscriptionDialog());
         }
+    }
+
+    private void showSubscriptionDialog() {
+        SubscriptionSelectionDialog dialog = new SubscriptionSelectionDialog();
+
+        // Get current tier from tvPlanName
+        String currentTier = "basic";
+        if (tvPlanName != null && tvPlanName.getText() != null) {
+            currentTier = tvPlanName.getText().toString().toLowerCase();
+        }
+
+        // Get current athlete count
+        String athletesText = tvAthletesUsage != null ? tvAthletesUsage.getText().toString() : "0 / 20";
+        int currentCount = 0;
+        try {
+            currentCount = Integer.parseInt(athletesText.split(" / ")[0].trim());
+        } catch (Exception e) {
+            currentCount = 0;
+        }
+
+        dialog.setCurrentTier(currentTier, currentCount);
+
+        dialog.setListener(new SubscriptionSelectionDialog.OnTierSelectedListener() {
+            @Override
+            public void onTierSelected(String newTier) {
+                // Reload data to update UI
+                loadCoachData();
+            }
+
+            @Override
+            public void onError(String error) {
+                if (error.startsWith("NEED_REMOVE_ATHLETES")) {
+                    // Parse the message
+                    String[] parts = error.split("\\|");
+                    String targetTier = parts.length > 1 ? parts[1] : "basic";
+                    // Store tier to switch to after removal
+                    Toast.makeText(CoachSettingsActivity.this,
+                            "Go to Manage Team Members to remove athletes", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        dialog.show(getSupportFragmentManager(), "SubscriptionDialog");
     }
 
     private void loadCoachData() {
@@ -128,15 +171,30 @@ public class CoachSettingsActivity extends BaseCoachActivity {
                         coachIdValue = cid;
                         if (tvCoachId != null) tvCoachId.setText("Coach ID: " + cid);
                         fetchAthletesCount(cid);
+
+                        Map<String, Object> subscription = (Map<String, Object>) doc.get("subscription");
+                        String currentTier = "basic";  // Default
+
+                        if (subscription != null) {
+                            Object tierObj = subscription.get("tier");
+                            if (tierObj != null) {
+                                currentTier = tierObj.toString();
+                            }
+                        }
+
+                        if (tvPlanName != null) {
+                            tvPlanName.setText(currentTier);
+                        }
+
                     } else {
                         coachIdValue = 0;
                         if (tvCoachId != null) tvCoachId.setText("Coach ID: -");
                         if (tvAthletesUsage != null) tvAthletesUsage.setText("0 / 20 athletes");
                         if (tvAthletesCount != null) tvAthletesCount.setText("0 athletes");
+                        if (tvPlanName != null) tvPlanName.setText("basic");
                     }
 
-                    // Subscription UI (placeholder until you connect real plan data)
-                    if (tvPlanName != null) tvPlanName.setText("basic");
+                    // Subscription UI
                     if (badgeStatus != null) badgeStatus.setText("Active");
                 })
                 .addOnFailureListener(e ->
