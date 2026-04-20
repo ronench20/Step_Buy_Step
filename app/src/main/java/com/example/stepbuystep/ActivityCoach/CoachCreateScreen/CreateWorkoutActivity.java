@@ -126,16 +126,47 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
 
     private void showDatePicker() {
         Calendar c = Calendar.getInstance();
-        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+        DatePickerDialog date = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             etDate.setText(String.format("%02d/%02d/%d", dayOfMonth, month + 1, year));
-        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+
+        // Disable dates before today
+        date.getDatePicker().setMinDate(System.currentTimeMillis());
+        date.show();
     }
 
     private void showTimePicker() {
         Calendar c = Calendar.getInstance();
-        new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+        int currentHour = c.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = c.get(Calendar.MINUTE);
+
+        // Check if today's date is selected
+        String selectedDate = etDate.getText().toString().trim();
+        String todayDate = String.format("%02d/%02d/%d",
+                c.get(Calendar.DAY_OF_MONTH),
+                c.get(Calendar.MONTH) + 1,
+                c.get(Calendar.YEAR));
+
+        // If today is selected, start from current time
+        int initialHour = currentHour;
+        int initialMinute = currentMinute;
+
+        if (!selectedDate.equals(todayDate)) {
+            // If future date is selected, allow any time
+            initialHour = currentHour;
+            initialMinute = currentMinute;
+        }
+        TimePickerDialog time = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            // Validate only if today is selected
+            if (selectedDate.equals(todayDate)) {
+                if (hourOfDay < currentHour || (hourOfDay == currentHour && minute < currentMinute)) {
+                    // Don't set the time - option disabled
+                    return;
+                }
+            }
             etTime.setText(String.format("%02d:%02d", hourOfDay, minute));
-        }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show();
+        }, initialHour, initialMinute, true);
+        time.show();
     }
 
     private void createWorkout() {
