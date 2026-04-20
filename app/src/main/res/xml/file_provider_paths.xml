@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Camera output path used by EnterInfoActivity -->
+    <external-files-path
+        name="profile_pictures"
+        path="Pictures" />
+</paths>

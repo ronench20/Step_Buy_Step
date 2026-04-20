@@ -81,10 +81,10 @@
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:backgroundTint="#007AFF"
                 android:text="Register"
-                android:textSize="18sp"
                 android:textColor="@android:color/white"
-                android:backgroundTint="#007AFF"/>
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/btnLogin"

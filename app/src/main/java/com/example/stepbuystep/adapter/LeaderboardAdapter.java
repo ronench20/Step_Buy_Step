@@ -1,5 +1,6 @@
 package com.example.stepbuystep.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.stepbuystep.R;
 
 import java.util.ArrayList;
@@ -31,14 +33,22 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         public int level; // or shoe level
         public double multiplier;
         public String city;
+        /** May be null/empty — falls back to initial-letter avatar. */
+        public String profileImageUrl;
 
         public LeaderboardItem(String id, String name, int rank, int level, double multiplier, String city) {
+            this(id, name, rank, level, multiplier, city, null);
+        }
+
+        public LeaderboardItem(String id, String name, int rank, int level,
+                               double multiplier, String city, String profileImageUrl) {
             this.id = id;
             this.name = name;
             this.rank = rank;
             this.level = level;
             this.multiplier = multiplier;
             this.city = city;
+            this.profileImageUrl = profileImageUrl;
         }
     }
 
@@ -85,9 +95,23 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             holder.tvRankNumber.setText(String.valueOf(item.rank));
         }
 
-        // Avatar
+        // Avatar: initial-letter fallback is always prepared; profile image
+        // overlays on top if the trainee has uploaded one.
         String initial = item.name.isEmpty() ? "?" : item.name.substring(0, 1).toUpperCase();
         holder.tvAvatar.setText(initial);
+
+        if (holder.ivAvatar != null) {
+            if (!TextUtils.isEmpty(item.profileImageUrl)) {
+                holder.ivAvatar.setVisibility(View.VISIBLE);
+                Glide.with(holder.itemView.getContext())
+                        .load(item.profileImageUrl)
+                        .circleCrop()
+                        .into(holder.ivAvatar);
+            } else {
+                holder.ivAvatar.setVisibility(View.GONE);
+                Glide.with(holder.itemView.getContext()).clear(holder.ivAvatar);
+            }
+        }
 
         // "You" badge
         if (item.id.equals(currentUserId)) {
@@ -108,18 +132,19 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvRankNumber, tvName, tvCity, tvLevel, tvMultiplier, tvAvatar, badgeYou;
-        ImageView ivRankIcon;
+        ImageView ivRankIcon, ivAvatar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvRankNumber = itemView.findViewById(R.id.tvRankNumber);
-            ivRankIcon = itemView.findViewById(R.id.ivRankIcon);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvCity = itemView.findViewById(R.id.tvCity);
-            tvLevel = itemView.findViewById(R.id.tvLevel);
+            ivRankIcon   = itemView.findViewById(R.id.ivRankIcon);
+            tvName       = itemView.findViewById(R.id.tvName);
+            tvCity       = itemView.findViewById(R.id.tvCity);
+            tvLevel      = itemView.findViewById(R.id.tvLevel);
             tvMultiplier = itemView.findViewById(R.id.tvMultiplier);
-            tvAvatar = itemView.findViewById(R.id.tvAvatar);
-            badgeYou = itemView.findViewById(R.id.badgeYou);
+            tvAvatar     = itemView.findViewById(R.id.tvAvatar);
+            ivAvatar     = itemView.findViewById(R.id.ivAvatar);
+            badgeYou     = itemView.findViewById(R.id.badgeYou);
         }
     }
 }

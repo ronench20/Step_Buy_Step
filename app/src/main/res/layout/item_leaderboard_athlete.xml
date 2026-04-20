@@ -45,18 +45,31 @@
                 android:visibility="gone" />
         </FrameLayout>
 
-        <!-- Avatar (gradient circle) -->
-        <TextView
-            android:id="@+id/tvAvatar"
+        <!-- Avatar: profile picture overlays the initial-letter fallback. -->
+        <FrameLayout
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/bg_avatar_gradient_circle"
-            android:gravity="center"
-            android:text="A"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="16dp">
+
+            <TextView
+                android:id="@+id/tvAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_avatar_gradient_circle"
+                android:gravity="center"
+                android:text="A"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/CircleImage" />
+        </FrameLayout>
 
         <!-- Info (flex-1) -->
         <LinearLayout

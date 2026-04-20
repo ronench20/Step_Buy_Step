@@ -257,9 +257,12 @@ public class LeaderBoardActivity extends AppCompatActivity{
                         if (name.length() > 0) name = name.substring(0, 1).toUpperCase() + name.substring(1);
                         String userId = doc.getId();
                         String city = "Unknown";
+                        String profileImageUrl = doc.getString("profileImageUrl");
 
-                        // Create placeholder item
-                        LeaderboardAdapter.LeaderboardItem item = new LeaderboardAdapter.LeaderboardItem(userId, name, 0, 1, 1.0, city);
+                        // Create placeholder item (rank/level/multiplier filled in below)
+                        LeaderboardAdapter.LeaderboardItem item =
+                                new LeaderboardAdapter.LeaderboardItem(
+                                        userId, name, 0, 1, 1.0, city, profileImageUrl);
                         tempItems.add(item);
 
                         // Fetch inventory for this user to find best shoe

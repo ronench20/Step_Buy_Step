@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import com.example.stepbuystep.ActivityTrainee.TraineeHomeScreen.TraineeHomeActivity;
 import com.example.stepbuystep.ActivityCommon.LoginActivity;
 import com.example.stepbuystep.R;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -21,8 +22,8 @@ public class PendingApprovalActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
-    private LinearLayout btnRefresh;
-    private LinearLayout btnLogout;
+    private MaterialButton btnRefresh;
+    private MaterialButton btnLogout;
     private ImageView ivStatusIcon;
     private TextView tvStatusTitle;
     private TextView tvStatusMessage;
