@@ -95,18 +95,18 @@ public class TrackingActivity extends ComponentActivity {
         db = FirebaseFirestore.getInstance();
 
         tvStats = findViewById(R.id.tvStats);
-        tvEquipmentInfo = findViewById(R.id.tvEquipmentInfo);
+        //tvEquipmentInfo = findViewById(R.id.tvEquipmentInfo);
         btnStart = findViewById(R.id.btnStartTracking);
         btnStop = findViewById(R.id.btnStopTracking);
-        rgActivityType = findViewById(R.id.rgActivityType);
-        rbWalk = findViewById(R.id.rbWalk);
-        rbRun = findViewById(R.id.rbRun);
+        //rgActivityType = findViewById(R.id.rgActivityType);
+        //rbWalk = findViewById(R.id.rbWalk);
+        //rbRun = findViewById(R.id.rbRun);
 
-        rgActivityType.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rbWalk) selectedType = "walking_shoes";
-            else selectedType = "running_shoes";
-            fetchBestEquipment();
-        });
+//        rgActivityType.setOnCheckedChangeListener((group, checkedId) -> {
+//            if (checkedId == R.id.rbWalk) selectedType = "walking_shoes";
+//            else selectedType = "running_shoes";
+//            fetchBestEquipment();
+//        });
 
         btnStart.setOnClickListener(v -> startSession());
         btnStop.setOnClickListener(v -> stopSession());
@@ -169,7 +169,7 @@ public class TrackingActivity extends ComponentActivity {
                         }
                     }
                     currentMultiplier = maxMult;
-                    tvEquipmentInfo.setText("Equipment: " + name + " (" + currentMultiplier + "x coins/km)");
+                    //tvEquipmentInfo.setText("Equipment: " + name + " (" + currentMultiplier + "x coins/km)");
                 });
     }
 
@@ -187,7 +187,7 @@ public class TrackingActivity extends ComponentActivity {
         trackingService.startTracking();
         btnStart.setVisibility(View.GONE);
         btnStop.setVisibility(View.VISIBLE);
-        rgActivityType.setEnabled(false);
+        //rgActivityType.setEnabled(false);
         handler.post(updateStatsRunnable);
     }
 
@@ -221,13 +221,13 @@ public class TrackingActivity extends ComponentActivity {
     }
 
     private void saveSessionToHistory(String uid, double distance, int steps, long earnedCoins) {
-        String type = rbRun.isChecked() ? "Run" : "Walk";
+        //String type = rbRun.isChecked() ? "Run" : "Walk";
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
         String date = sdf.format(new java.util.Date());
 
         Map<String, Object> session = new java.util.HashMap<>();
         session.put("userId", uid);
-        session.put("type", type);
+        //session.put("type", type);
         session.put("distance", distance);
         session.put("steps", steps);
         session.put("earnedCoins", earnedCoins);

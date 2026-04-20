@@ -39,11 +39,12 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
     private TextView tvUserName, tvShoeCount, tvCurrentShoeName, tvCurrentShoeLevel, tvMultiplier, tvCoachScheduledBadge, tvNotificationBadge;
     private CardView btnCategoryRunning, btnCategoryWalking, btnCoachScheduled;
     private LinearLayout btnLogout;
-    private RecyclerView rvWorkouts;
-    private WorkoutAdapter workoutAdapter;
-    private LinearLayout emptyStateWorkouts;
+    //    private RecyclerView rvWorkouts;
+//    private WorkoutAdapter workoutAdapter;
+//    private LinearLayout emptyStateWorkouts;
     private FrameLayout btnNotifications;
     //private boolean showingWorkouts = false;
+    private final List<WorkoutAdapter.WorkoutItem> workouts = new ArrayList<>();
 
 
     @Override
@@ -56,7 +57,7 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
 
         initViews();
         setupNavigationBar(NavItem.DASHBOARD);
-        setupRecyclerView();
+        //setupRecyclerView();
         setupListeners();
         loadUserData();
         fetchUnreadMessageCount();
@@ -74,10 +75,10 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
 
         btnLogout = findViewById(R.id.btnLogout);
 
-        rvWorkouts = findViewById(R.id.rvWorkouts);
-        emptyStateWorkouts = findViewById(R.id.emptyStateWorkouts);
-
-        emptyStateWorkouts.setVisibility(View. GONE);
+//        rvWorkouts = findViewById(R.id.rvWorkouts);
+//        emptyStateWorkouts = findViewById(R.id.emptyStateWorkouts);
+//
+//        emptyStateWorkouts.setVisibility(View. GONE);
         btnNotifications = findViewById(R.id.btnNotifications);
         tvNotificationBadge = findViewById(R.id.tvNotificationBadge);
 
@@ -88,12 +89,12 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
         tvNotificationBadge = findViewById(R.id.tvNotificationBadge);
     }
 
-    private void setupRecyclerView() {
-        workoutAdapter = new WorkoutAdapter();
-        rvWorkouts.setLayoutManager(new LinearLayoutManager(this));
-        rvWorkouts.setAdapter(workoutAdapter);
-        rvWorkouts.setVisibility(View.GONE);
-    }
+//    private void setupRecyclerView() {
+//        workoutAdapter = new WorkoutAdapter();
+//        rvWorkouts.setLayoutManager(new LinearLayoutManager(this));
+//        rvWorkouts.setAdapter(workoutAdapter);
+//        rvWorkouts.setVisibility(View.GONE);
+//    }
 
     private void setupListeners() {
         // Logout
@@ -119,15 +120,26 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
         dialog.show(getSupportFragmentManager(), "UpcomingWorkoutsDialog");
     }
 
+    //    private List<WorkoutAdapter.WorkoutItem> getUpcomingWorkouts() {
+//        List<WorkoutAdapter.WorkoutItem> allWorkouts = workoutAdapter.getWorkouts();
+//        List<WorkoutAdapter.WorkoutItem> upcoming = new ArrayList<>();
+//
+//        if (allWorkouts != null) {
+//            for (WorkoutAdapter. WorkoutItem workout : allWorkouts) {
+//                if (isUpcomingWorkout(workout.date, workout.time)) {
+//                    upcoming.add(workout);
+//                }
+//            }
+//        }
+//
+//        return upcoming;
+//    }
     private List<WorkoutAdapter.WorkoutItem> getUpcomingWorkouts() {
-        List<WorkoutAdapter.WorkoutItem> allWorkouts = workoutAdapter.getWorkouts();
         List<WorkoutAdapter.WorkoutItem> upcoming = new ArrayList<>();
 
-        if (allWorkouts != null) {
-            for (WorkoutAdapter. WorkoutItem workout : allWorkouts) {
-                if (isUpcomingWorkout(workout.date, workout.time)) {
-                    upcoming.add(workout);
-                }
+        for (WorkoutAdapter.WorkoutItem workout : workouts) {
+            if (isUpcomingWorkout(workout.date, workout.time)) {
+                upcoming.add(workout);
             }
         }
 
@@ -307,14 +319,17 @@ public class TraineeHomeActivity extends BaseTraineeActivity {
                     }
 
                     // Set all workouts to adapter (we'll filter when showing dialog)
-                    workoutAdapter. setWorkouts(allWorkouts);
-
-                    // Update badge with upcoming count only
+//                    workoutAdapter. setWorkouts(allWorkouts);
+//
+//                    // Update badge with upcoming count only
+//                    updateCoachScheduledBadge(upcomingWorkouts.size());
+//
+//                    // Keep workouts hidden (they're shown in dialog only)
+//                    rvWorkouts. setVisibility(View.GONE);
+//                    emptyStateWorkouts.setVisibility(View. GONE);
+                    workouts.clear();
+                    workouts.addAll(allWorkouts);
                     updateCoachScheduledBadge(upcomingWorkouts.size());
-
-                    // Keep workouts hidden (they're shown in dialog only)
-                    rvWorkouts. setVisibility(View.GONE);
-                    emptyStateWorkouts.setVisibility(View. GONE);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error loading workouts:  " + e.getMessage(), Toast.LENGTH_LONG).show();
