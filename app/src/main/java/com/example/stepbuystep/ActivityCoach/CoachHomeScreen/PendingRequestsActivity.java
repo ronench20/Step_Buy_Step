@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.PendingRequestsAdapter;
+import com.example.stepbuystep.model.CoachSubscriptionHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -32,6 +33,8 @@ public class PendingRequestsActivity extends AppCompatActivity {
 
     private PendingRequestsAdapter adapter;
     private long coachIdValue = 0;
+    private int maxAthletes = 20;
+    private int currentAthletes = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,7 @@ public class PendingRequestsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pending_requests);
 
         auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore. getInstance();
+        db = FirebaseFirestore.getInstance();
 
         initViews();
         setupRecyclerView();
@@ -48,7 +51,7 @@ public class PendingRequestsActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        btnBack = findViewById(R.id. btnBack);
+        btnBack = findViewById(R.id.btnBack);
         rvPendingRequests = findViewById(R.id.rvPendingRequests);
         emptyStatePending = findViewById(R.id.emptyStatePending);
     }
@@ -76,7 +79,7 @@ public class PendingRequestsActivity extends AppCompatActivity {
     }
 
     private void loadCoachId() {
-        String uid = auth.getUid();
+        String uid = auth.getCurrentUser().getUid();
         if (uid == null) return;
 
         db.collection("users").document(uid).get()
@@ -86,6 +89,24 @@ public class PendingRequestsActivity extends AppCompatActivity {
                         if (coachId != null) {
                             coachIdValue = coachId;
                             loadPendingRequests(coachId);
+
+                            // ===== USE THE HELPER CLASS =====
+                            CoachSubscriptionHelper.loadCoachSubscriptionAndCount(
+                                    uid, coachId, db,
+                                    new CoachSubscriptionHelper.OnSubscriptionLoadListener() {
+                                        @Override
+                                        public void onSubscriptionLoaded(int max, int current) {
+                                            maxAthletes = max;
+                                            currentAthletes = current;
+                                        }
+
+                                        @Override
+                                        public void onError(String error) {
+                                            Toast.makeText(PendingRequestsActivity.this,
+                                                    "Error loading subscription", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                            // ===== END HELPER =====
                         }
                     }
                 })
@@ -131,10 +152,9 @@ public class PendingRequestsActivity extends AppCompatActivity {
 
                         adapter.setRequests(requests);
 
-                        // Show/hide empty state
                         if (requests.isEmpty()) {
                             rvPendingRequests.setVisibility(View.GONE);
-                            emptyStatePending.setVisibility(View. VISIBLE);
+                            emptyStatePending.setVisibility(View.VISIBLE);
                         } else {
                             rvPendingRequests.setVisibility(View.VISIBLE);
                             emptyStatePending.setVisibility(View.GONE);
@@ -144,6 +164,11 @@ public class PendingRequestsActivity extends AppCompatActivity {
     }
 
     private void showApproveConfirmation(String userId) {
+        if (currentAthletes >= maxAthletes) {
+            showTierLimitDialog();
+            return;
+        }
+
         new AlertDialog.Builder(this)
                 .setTitle("Approve Trainee")
                 .setMessage("Are you sure you want to approve this trainee?")
@@ -152,8 +177,17 @@ public class PendingRequestsActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showTierLimitDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Tier Limit Reached")
+                .setMessage("You have reached the maximum number of athletes (" + maxAthletes + ") for your current tier.\n\n" +
+                        "To add more athletes, upgrade your subscription in Settings.")
+                .setPositiveButton("Got it", null)
+                .show();
+    }
+
     private void showRejectConfirmation(String userId) {
-        new AlertDialog. Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle("Reject Trainee")
                 .setMessage("Are you sure you want to reject this trainee?")
                 .setPositiveButton("Reject", (dialog, which) -> rejectTrainee(userId))
@@ -166,8 +200,8 @@ public class PendingRequestsActivity extends AppCompatActivity {
                 .document(userId)
                 .update("status", "approved")
                 .addOnSuccessListener(aVoid -> {
-                    Toast. makeText(this, "Trainee approved!", Toast.LENGTH_SHORT).show();
-                    // Adapter will auto-update via snapshot listener
+                    Toast.makeText(this, "Trainee approved!", Toast.LENGTH_SHORT).show();
+                    currentAthletes++;
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to approve trainee", Toast.LENGTH_SHORT).show();
@@ -177,17 +211,16 @@ public class PendingRequestsActivity extends AppCompatActivity {
     private void rejectTrainee(String userId) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", "rejected");
-        updates.put("coachID", null); // Remove coach association
+        updates.put("coachID", null);
 
         db.collection("users")
                 .document(userId)
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
-                    Toast. makeText(this, "Trainee rejected", Toast.LENGTH_SHORT).show();
-                    // Adapter will auto-update via snapshot listener
+                    Toast.makeText(this, "Trainee rejected", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Toast. makeText(this, "Failed to reject trainee", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Failed to reject trainee", Toast.LENGTH_SHORT).show();
                 });
     }
 }

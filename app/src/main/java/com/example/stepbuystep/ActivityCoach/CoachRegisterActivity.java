@@ -47,9 +47,18 @@ public class CoachRegisterActivity extends ComponentActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString();
 
-        if (TextUtils.isEmpty(email)) { etEmail.setError("Email required"); return; }
-        if (TextUtils.isEmpty(password)) { etPassword.setError("Password required"); return; }
-        if (password.length() < 6) { etPassword.setError("Min 6 characters"); return; }
+        if (TextUtils.isEmpty(email)) {
+            etEmail.setError("Email required");
+            return;
+        }
+        if (TextUtils.isEmpty(password)) {
+            etPassword.setError("Password required");
+            return;
+        }
+        if (password.length() < 6) {
+            etPassword.setError("Min 6 characters");
+            return;
+        }
 
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(res -> createCoachProfile(email))
@@ -97,10 +106,16 @@ public class CoachRegisterActivity extends ComponentActivity {
             coachDoc.put("coachID", coachId);
             transaction.set(db.collection("coaches").document(uid), coachDoc);
 
+            Map<String, Object> subscription = new HashMap<>();
+            subscription.put("tier", "basic");
+            subscription.put("maxAthletes", 20);
+            subscription.put("price", 0.0);
+
             Map<String, Object> userDoc = new HashMap<>();
             userDoc.put("email", email);
             userDoc.put("role", "coach");
             userDoc.put("coachID", coachId);
+            userDoc.put("subscription", subscription);  // ADD THIS LINE
             transaction.set(db.collection("users").document(uid), userDoc);
 
             return null;

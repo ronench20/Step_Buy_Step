@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stepbuystep.ActivityCoach.BaseCoachActivity;
 import com.example.stepbuystep.R;
+import com.example.stepbuystep.model.CoachSubscriptionHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -143,25 +144,26 @@ public class CoachSettingsActivity extends BaseCoachActivity {
     }
 
     private void fetchAthletesCount(long coachId) {
-        db.collection("users")
-                .whereEqualTo("role", "trainee")
-                .whereEqualTo("coachID", coachId)
-                .whereEqualTo("status", "approved")
-                .addSnapshotListener((querySnapshot, error) -> {
-                    if (error != null) {
-                        Toast.makeText(this, "Failed to load athletes count", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+        String uid = auth.getCurrentUser().getUid();
 
-                    if (querySnapshot != null) {
-                        int count = querySnapshot.size();
-
+        CoachSubscriptionHelper.loadCoachSubscriptionAndCount(
+                uid, coachId, db,
+                new CoachSubscriptionHelper.OnSubscriptionLoadListener() {
+                    @Override
+                    public void onSubscriptionLoaded(int maxAthletes, int currentAthletes) {
+                        // Update UI with subscription info
                         if (tvAthletesUsage != null) {
-                            tvAthletesUsage. setText(count + " / 20 athletes");
+                            tvAthletesUsage.setText(currentAthletes + " / " + maxAthletes + " athletes");
                         }
                         if (tvAthletesCount != null) {
-                            tvAthletesCount.setText(count + " athletes");
+                            tvAthletesCount.setText(currentAthletes + " athletes");
                         }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(CoachSettingsActivity.this,
+                                "Failed to load athletes count", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
