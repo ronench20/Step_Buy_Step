@@ -113,7 +113,7 @@ public class PendingApprovalActivity extends AppCompatActivity {
         tvStatusMessage.setText("Your registration request was rejected by the coach.");
         tvStatusSubMessage.setText("Please contact your coach for more information.");
 
-        btnRefresh.setVisibility(View. GONE);
+        btnRefresh.setVisibility(View.GONE);
     }
 
     @Override

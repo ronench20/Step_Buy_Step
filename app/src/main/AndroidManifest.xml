@@ -99,6 +99,9 @@
             android:name=".ActivityCoach.CoachSettingsScreen.ManageTeamMembersActivity"
             android:exported="false" />
         <activity
+            android:name=".ActivityCoach.CoachSettingsScreen.CreateSubGroupActivity"
+            android:exported="false" />
+        <activity
             android:name=".ActivityCommon.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.StepBuyStep">

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/cbSelectTrainee"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp" />
+
+    <!-- Trainee Info -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTraineeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trainee Name"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/tvTraineeEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="trainee@email.com"
+            android:textSize="12sp"
+            android:textColor="@color/text_muted"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+</LinearLayout>

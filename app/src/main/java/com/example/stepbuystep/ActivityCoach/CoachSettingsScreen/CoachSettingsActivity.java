@@ -95,7 +95,7 @@ public class CoachSettingsActivity extends BaseCoachActivity {
 
         if (rowEditGroup != null) {
             rowEditGroup.setOnClickListener(v ->
-                    Toast.makeText(this, "Edit Group: Coming soon", Toast.LENGTH_SHORT).show());
+                    startActivity(new Intent(this, CreateSubGroupActivity.class)));
         }
 
         if (rowChangeSubscription != null) {
