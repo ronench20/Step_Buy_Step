@@ -76,11 +76,10 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> {
-            if (pendingTierDowngrade != null && athletesRemovedCount > 0) {
-                completeTierDowngrade();
-            } else {
-                finish();
-            }
+            // Back always just closes this screen. The tier downgrade is no longer
+            // auto-completed from here — it must be explicitly re-confirmed from the
+            // subscription dialog, which re-validates capacity against Firestore.
+            finish();
         });
 
         adapter.setListener((userId, name) -> showRemoveConfirmation(userId, name));
@@ -190,26 +189,62 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Writes the new (lower) subscription tier to the coach's user document.
+     *
+     * Capacity is re-validated here even though the subscription dialog also
+     * checks it — this is the final gate before the Firestore write and closes
+     * any race window between removing athletes and confirming the downgrade.
+     * If the coach still exceeds the target tier's cap, the update is aborted
+     * and the user is told exactly how many more athletes must be removed.
+     */
     private void completeTierDowngrade() {
+        if (auth.getCurrentUser() == null) return;
         String uid = auth.getCurrentUser().getUid();
         if (uid == null) return;
+        if (pendingTierDowngrade == null) return;
 
         SubscriptionTier tier = SubscriptionTier.getTierByName(pendingTierDowngrade);
 
-        Map<String, Object> subscriptionData = new HashMap<>();
-        subscriptionData.put("tier", tier.getTier());
-        subscriptionData.put("maxAthletes", tier.getMaxAthletes());
-        subscriptionData.put("price", tier.getPrice());
+        // Re-fetch the authoritative approved-athlete count before writing.
+        db.collection("users")
+                .whereEqualTo("role", "trainee")
+                .whereEqualTo("coachID", coachIdValue)
+                .whereEqualTo("status", "approved")
+                .get()
+                .addOnSuccessListener(qs -> {
+                    int currentApproved = (qs != null) ? qs.size() : 0;
 
-        db.collection("users").document(uid)
-                .update("subscription", subscriptionData)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Tier downgraded to " + pendingTierDowngrade + "!",
-                            Toast.LENGTH_SHORT).show();
-                    finish();
+                    if (currentApproved > tier.getMaxAthletes()) {
+                        int needToRemove = currentApproved - tier.getMaxAthletes();
+                        Toast.makeText(this,
+                                "Downgrade blocked: remove " + needToRemove
+                                        + " more athlete(s) to fit the "
+                                        + pendingTierDowngrade + " plan ("
+                                        + tier.getMaxAthletes() + " max).",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    Map<String, Object> subscriptionData = new HashMap<>();
+                    subscriptionData.put("tier", tier.getTier());
+                    subscriptionData.put("maxAthletes", tier.getMaxAthletes());
+                    subscriptionData.put("price", tier.getPrice());
+
+                    db.collection("users").document(uid)
+                            .update("subscription", subscriptionData)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this,
+                                        "Tier downgraded to " + pendingTierDowngrade + "!",
+                                        Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Failed to downgrade tier",
+                                            Toast.LENGTH_SHORT).show());
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to downgrade tier", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to verify team size",
+                                Toast.LENGTH_SHORT).show());
     }
 }

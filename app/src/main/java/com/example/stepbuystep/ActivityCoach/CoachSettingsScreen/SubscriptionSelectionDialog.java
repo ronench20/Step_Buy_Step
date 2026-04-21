@@ -84,35 +84,94 @@ public class SubscriptionSelectionDialog extends DialogFragment {
             return;
         }
 
-        // Check if downgrading
-        if (currentAthleteCount > tier.getMaxAthletes()) {
-            // Need to remove athletes first
-            int needToRemove = currentAthleteCount - tier.getMaxAthletes();
-            showDowngradeWarning(selectedTier, tier.getMaxAthletes(), needToRemove);
-        } else {
-            // Can upgrade/downgrade directly
-            updateTierInFirebase(selectedTier, tier);
-        }
+        // STRICT validation: before allowing any tier change, re-fetch the
+        // authoritative Approved-athlete count from Firestore. The value passed
+        // in from the settings screen comes from a TextView and may be 0 (still
+        // loading) or stale, which previously let a coach downgrade past the cap.
+        fetchAuthoritativeApprovedCount(actualCount -> {
+            if (actualCount > tier.getMaxAthletes()) {
+                int needToRemove = actualCount - tier.getMaxAthletes();
+                // Block the downgrade outright and tell the coach exactly how many
+                // athletes must be removed before switching to this plan.
+                showDowngradeBlocked(selectedTier, tier.getMaxAthletes(), actualCount, needToRemove);
+            } else {
+                // Capacity is OK — safe to upgrade or downgrade.
+                updateTierInFirebase(selectedTier, tier);
+            }
+        });
     }
 
-    private void showDowngradeWarning(String newTier, int maxAthletes, int needToRemove) {
-        androidx.appcompat.app.AlertDialog.Builder builder =
-                new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+    /**
+     * Reads Firestore directly to count the coach's currently approved athletes.
+     * This is the single source of truth used for downgrade gating.
+     */
+    private interface CountCallback {
+        void onCount(int count);
+    }
 
-        builder.setTitle("Downgrade Warning")
-                .setMessage("You have " + currentAthleteCount + " athletes.\n\n" +
-                        "The " + newTier + " tier allows only " + maxAthletes + " athletes.\n\n" +
-                        "You need to remove at least " + needToRemove + " athlete(s) before downgrading.\n\n" +
-                        "Open Manage Team Members to remove athletes.")
+    private void fetchAuthoritativeApprovedCount(CountCallback cb) {
+        if (auth.getCurrentUser() == null) {
+            cb.onCount(currentAthleteCount); // fall back to cached value
+            return;
+        }
+        String uid = auth.getCurrentUser().getUid();
+
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(coachDoc -> {
+                    Long coachId = coachDoc.getLong("coachID");
+                    if (coachId == null) {
+                        cb.onCount(currentAthleteCount);
+                        return;
+                    }
+
+                    db.collection("users")
+                            .whereEqualTo("role", "trainee")
+                            .whereEqualTo("coachID", coachId)
+                            .whereEqualTo("status", "approved")
+                            .get()
+                            .addOnSuccessListener(qs -> {
+                                int count = (qs != null) ? qs.size() : 0;
+                                // Keep cached copy in sync so the UI reflects reality.
+                                currentAthleteCount = count;
+                                cb.onCount(count);
+                            })
+                            .addOnFailureListener(e -> cb.onCount(currentAthleteCount));
+                })
+                .addOnFailureListener(e -> cb.onCount(currentAthleteCount));
+    }
+
+    /**
+     * Hard-blocks a downgrade that would overflow the target plan's athlete cap.
+     * The coach is told exactly how many athletes must be removed. We still offer
+     * a shortcut to the Manage Team Members screen, but the switch to the new
+     * plan will NOT happen automatically — after removing athletes the coach must
+     * come back to this dialog and pick the tier again, at which point the
+     * authoritative re-fetch in handleTierSelection will let it through.
+     */
+    private void showDowngradeBlocked(String newTier, int maxAthletes,
+                                      int actualCount, int needToRemove) {
+        String message = "Downgrade blocked.\n\n"
+                + "You currently have " + actualCount + " approved athlete(s).\n"
+                + "The \"" + newTier + "\" plan allows a maximum of "
+                + maxAthletes + " athlete(s).\n\n"
+                + "You must remove " + needToRemove
+                + " athlete(s) before switching to this plan.";
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Cannot downgrade yet")
+                .setMessage(message)
+                .setCancelable(false)
                 .setPositiveButton("Manage Team Members", (dialog, which) -> {
-                    // ===== PASS TIER INFO TO ManageTeamMembersActivity =====
+                    // Navigate to the removal screen — but do NOT pass any
+                    // "pendingTierDowngrade" payload. The tier change will only
+                    // go through if the coach re-opens this dialog afterwards.
                     Intent intent = new Intent(getContext(), ManageTeamMembersActivity.class);
-                    intent.putExtra("pendingTierDowngrade", newTier);
-                    intent.putExtra("pendingTierMaxAthletes", maxAthletes);
                     startActivity(intent);
                     dismiss();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Keep Current Plan", (dialog, which) -> {
+                    // Explicitly do nothing: the plan is NOT changed.
+                })
                 .show();
     }
 

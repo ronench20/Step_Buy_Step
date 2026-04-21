@@ -224,12 +224,13 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
                     // Send automatic notifications to selected trainees
                     sendWorkoutNotifications(type, date, time, location, traineeIds);
 
-                    // Reset the form (in case the user doesn't navigate away) and
-                    // finish back to CoachHome so the newly-saved workout appears
-                    // in the "Upcoming Workouts" card immediately — the dashboard's
-                    // snapshot listener picks it up as we return.
+                    // Stay on the Create Workout screen after a successful save.
+                    // Previously we called finish() here, which popped the activity
+                    // back to the launcher (SplashActivity) because the intermediate
+                    // CoachHome activity is finished by BaseCoachActivity.navigateToPage().
+                    // The coach should be able to keep scheduling workouts or use the
+                    // bottom nav to move to another management screen.
                     clearForm();
-                    finish();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error:  " + e.getMessage(), Toast.LENGTH_SHORT).show()
@@ -314,14 +315,24 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
     }
 
     private void fetchTraineesForSelection(Long coachId) {
+        // Only Approved trainees can be added to a workout session.
+        // Pending trainees have not completed the coach-approval handshake,
+        // so they must not appear in the selection list at all.
         db.collection("users")
                 .whereEqualTo("role", "trainee")
                 .whereEqualTo("coachID", coachId)
+                .whereEqualTo("status", "approved")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<TraineeSelectionAdapter.TraineeItem> trainees = new ArrayList<>();
 
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : querySnapshot) {
+                        // Defensive skip — in case any legacy doc slips through the filter.
+                        String status = doc.getString("status");
+                        if (status == null || !"approved".equalsIgnoreCase(status)) {
+                            continue;
+                        }
+
                         String email = doc.getString("email");
                         String name = (email != null) ? email.split("@")[0] : "Trainee";
                         // Capitalize first letter

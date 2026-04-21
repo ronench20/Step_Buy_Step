@@ -116,15 +116,25 @@ public class BroadcastMessageDialogActivity extends DialogFragment {
                     coachIdValue = coachDoc.getLong("coachID");
                     if (coachIdValue == null) return;
 
-                    // Fetch trainees under this coach
+                    // Fetch trainees under this coach — APPROVED only.
+                    // Broadcast messages must never be delivered to Pending trainees
+                    // (those whose registration hasn't been accepted yet).
                     db. collection("users")
                             . whereEqualTo("role", "trainee")
                             .whereEqualTo("coachID", coachIdValue)
+                            .whereEqualTo("status", "approved")
                             .get()
                             .addOnSuccessListener(querySnapshot -> {
                                 List<TraineeSelectionAdapter.TraineeItem> trainees = new ArrayList<>();
 
                                 for (QueryDocumentSnapshot doc : querySnapshot) {
+                                    // Defensive double-check: even with the query filter,
+                                    // skip anything that isn't explicitly "approved".
+                                    String status = doc.getString("status");
+                                    if (status == null || !"approved".equalsIgnoreCase(status)) {
+                                        continue;
+                                    }
+
                                     String traineeId = doc.getId();
                                     String email = doc.getString("email");
                                     String name = (email != null) ? email.split("@")[0] : "Trainee";
