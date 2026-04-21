@@ -132,10 +132,6 @@ public class CreateSubGroupActivity extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
 
-                    // Show/hide empty state (optional - add this if you want)
-                    if (traineesForSelection.isEmpty()) {
-                        Toast.makeText(CreateSubGroupActivity.this, "No trainees found", Toast.LENGTH_SHORT).show();
-                    }
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error loading trainees: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -188,11 +184,10 @@ public class CreateSubGroupActivity extends AppCompatActivity {
         NotificationManager notificationManager = new NotificationManager();
         notificationManager.notifyTraineesOnSubGroupCreation(subGroupName, traineeIds, coachName,
                 (success, message) -> {
-                    if (success) {
-                        Toast.makeText(CreateSubGroupActivity.this, message, Toast.LENGTH_SHORT).show();
-                    } else {
+                    if (!success) {
                         Toast.makeText(CreateSubGroupActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                     }
+
                 });
 
         // Show success and close

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +30,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LeaderBoardActivity extends AppCompatActivity{
 
@@ -41,6 +45,12 @@ public class LeaderBoardActivity extends AppCompatActivity{
     private LinearLayout bottomNavigationBar;
     private LinearLayout navDashboard, navHistory, navShoeStore, navLeaderboard;
 
+    // NEW: Sub-group filtering
+    private Spinner spinnerSubGroups;
+    private String selectedSubGroupId = "general";  // "general" = show all trainees
+    private List<String> userSubGroups = new ArrayList<>();  // For trainees: their sub-groups
+    private Map<String, String> subGroupIdToName = new HashMap<>();  // For dropdown display
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +61,12 @@ public class LeaderBoardActivity extends AppCompatActivity{
 
         rvAthletes = findViewById(R.id.rv_athletes);
         btnBack = findViewById(R.id.btn_back);
+        spinnerSubGroups = findViewById(R.id.spinnerSubGroups);  // NEW
 
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> finish());
         }
         initNavigationViews();
-
 
         setupRecyclerView();
         loadUserData();
@@ -65,9 +75,9 @@ public class LeaderBoardActivity extends AppCompatActivity{
     private void initNavigationViews() {
         bottomNavigationBar = findViewById(R.id.bottomNavigationBar);
         navDashboard = findViewById(R.id.navDashboard);
-        navHistory = findViewById(R.id.navHistory);
-        navShoeStore = findViewById(R.id.navShoeStore);
-        navLeaderboard = findViewById(R.id.navLeaderboard);
+        navHistory = findViewById(R.id. navHistory);
+        navShoeStore = findViewById(R.id. navShoeStore);
+        navLeaderboard = findViewById(R.id. navLeaderboard);
     }
 
     private void setupRecyclerView() {
@@ -78,7 +88,7 @@ public class LeaderBoardActivity extends AppCompatActivity{
 
         adapter.setListener(item -> {
             if ("coach".equals(currentUserRole)) {
-                 showMarkAttendanceDialog(item.id, item.name);
+                showMarkAttendanceDialog(item.id, item.name);
             }
         });
     }
@@ -94,14 +104,51 @@ public class LeaderBoardActivity extends AppCompatActivity{
 
                 setupNavigationBasedOnRole(currentUserRole);
 
+                // NEW: Load sub-groups if trainee
+                if ("trainee".equals(currentUserRole)) {
+                    List<String> subgroups = (List<String>) doc.get("subgroups");
+                    if (subgroups != null) {
+                        userSubGroups = new ArrayList<>(subgroups);
+                    }
+                }
 
                 if (coachId != null) {
-                    fetchTrainees(coachId);
+                    // Fetch trainees AND sub-groups
+                    fetchTraineesAndSubGroups(coachId);
                 } else if ("coach".equals(currentUserRole)) {
-                    fetchTrainees(doc.getLong("coachID"));
+                    Long coachIdSelf = doc.getLong("coachID");
+                    if (coachIdSelf != null) {
+                        fetchTraineesAndSubGroups(coachIdSelf);
+                    }
                 }
             }
         }).addOnFailureListener(e -> Toast.makeText(this, "Error loading profile", Toast.LENGTH_SHORT).show());
+    }
+
+    // NEW: Fetch trainees AND load sub-group information
+    private void fetchTraineesAndSubGroups(Long coachId) {
+        if (coachId == null) return;
+
+        db.collection("subgroups")
+                .whereEqualTo("coachID", coachId)
+                .get()
+                .addOnSuccessListener(subGroupDocs -> {
+                    subGroupIdToName.clear();  // Clear previous data
+
+                    for (QueryDocumentSnapshot doc : subGroupDocs) {
+                        String subGroupId = doc.getId();
+                        String subGroupName = doc.getString("name");
+                        if (subGroupName != null) {
+                            subGroupIdToName.put(subGroupId, subGroupName);
+                        }
+                    }
+                    setupSubGroupSpinner();
+                    fetchTrainees(coachId);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading sub-groups: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    fetchTrainees(coachId);
+                });
     }
 
     private void setupNavigationBasedOnRole(String role) {
@@ -134,7 +181,6 @@ public class LeaderBoardActivity extends AppCompatActivity{
             });
         }
 
-        // Highlight the current page (Leaderboard)
         highlightNavigationItem("leaderboard");
     }
 
@@ -240,6 +286,179 @@ public class LeaderBoardActivity extends AppCompatActivity{
         }
     }
 
+    private void setupSubGroupSpinner() {
+        if (spinnerSubGroups == null) {
+            Toast.makeText(this, "Spinner not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        List<String> options = new ArrayList<>();
+        options.add("General Leaderboard");  // Always show this first
+
+        // Filter sub-groups based on user role
+        if ("trainee".equals(currentUserRole)) {
+            // TRAINEE: Only show sub-groups they're in
+            for (String subGroupId : userSubGroups) {
+                if (subGroupIdToName.containsKey(subGroupId)) {
+                    String subGroupName = subGroupIdToName.get(subGroupId);
+                    options.add(subGroupName);
+                }
+            }
+        } else {
+            // COACH: Show all sub-groups they created
+            for (String subGroupName : subGroupIdToName.values()) {
+                options.add(subGroupName);
+            }
+        }
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, options);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSubGroups.setAdapter(spinnerAdapter);
+
+        // Handle selection changes
+        spinnerSubGroups.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    // General Leaderboard selected
+                    selectedSubGroupId = "general";
+                } else {
+                    // Find the sub-group ID for this name
+                    String selectedName = (String) parent.getItemAtPosition(position);
+                    for (Map.Entry<String, String> entry : subGroupIdToName.entrySet()) {
+                        if (entry.getValue().equals(selectedName)) {
+                            selectedSubGroupId = entry.getKey();
+                            break;
+                        }
+                    }
+                }
+
+                // Refresh leaderboard with selected filter
+                refreshLeaderboard();
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+    }
+
+    private void refreshLeaderboard() {
+        if ("trainee".equals(currentUserRole)) {
+            // For trainees: filter by their sub-groups or show general
+            String uid = auth.getUid();
+            if (uid == null) return;
+
+            db.collection("users").document(uid).get()
+                    .addOnSuccessListener(doc -> {
+                        Long coachId = doc.getLong("coachID");
+                        if (coachId != null) {
+                            if ("general".equals(selectedSubGroupId)) {
+                                // Show all trainees under this coach
+                                fetchTraineesForLeaderboard(coachId, null);
+                            } else {
+                                // Show only trainees in this sub-group
+                                fetchTraineesForLeaderboard(coachId, selectedSubGroupId);
+                            }
+                        }
+                    });
+        } else {
+            String uid = auth.getUid();
+            if (uid == null) return;
+
+            db.collection("users").document(uid).get()
+                    .addOnSuccessListener(doc -> {
+                        Long coachId = doc.getLong("coachID");
+                        if (coachId != null) {
+                            if ("general".equals(selectedSubGroupId)) {
+                                fetchTraineesForLeaderboard(coachId, null);
+                            } else {
+                                fetchTraineesForLeaderboard(coachId, selectedSubGroupId);
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void fetchTraineesForLeaderboard(Long coachId, String subGroupId) {
+        if (coachId == null) return;
+
+        if ("general".equals(subGroupId) || subGroupId == null) {
+            // Fetch all trainees
+            fetchTrainees(coachId);
+        } else {
+            db.collection("subgroups")
+                    .document(subGroupId)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        if (doc.exists()) {
+                            List<String> traineeIds = (List<String>) doc.get("trainees");
+                            if (traineeIds != null && !traineeIds.isEmpty()) {
+                                fetchTraineesFromIds(traineeIds);
+                            } else {
+                                updateAdapter(new ArrayList<>());
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void fetchTraineesFromIds(List<String> traineeIds) {
+        List<LeaderboardAdapter.LeaderboardItem> tempItems = new ArrayList<>();
+        List<Task<QuerySnapshot>> tasks = new ArrayList<>();
+        List<String> itemIds = new ArrayList<>();  // Track order
+
+        for (String traineeId : traineeIds) {
+            itemIds.add(traineeId);
+
+            db.collection("users").document(traineeId).get()
+                    .addOnSuccessListener(doc -> {
+                        if (doc.exists()) {
+                            String email = doc.getString("email");
+                            String name = (email != null) ? email.split("@")[0] : "Trainee";
+                            if (name.length() > 0) name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                            String city = doc.getString("city");
+                            if (city == null) city = "Unknown";
+                            String profileImageUrl = doc.getString("profileImageUrl");
+
+                            LeaderboardAdapter.LeaderboardItem item =
+                                    new LeaderboardAdapter.LeaderboardItem(
+                                            traineeId, name, 0, 1, 1.0, city, profileImageUrl);
+                            tempItems.add(item);
+
+                            // Fetch inventory
+                            Task<QuerySnapshot> task = db.collection("users").document(traineeId).collection("inventory")
+                                    .orderBy("multiplier", Query.Direction.DESCENDING)
+                                    .limit(1)
+                                    .get();
+                            tasks.add(task);
+
+                            // When all items are loaded
+                            if (tempItems.size() == traineeIds.size()) {
+                                Tasks.whenAllComplete(tasks).addOnSuccessListener(results -> {
+                                    for (int i = 0; i < tasks.size(); i++) {
+                                        Task<QuerySnapshot> t = tasks.get(i);
+                                        if (t.isSuccessful() && !t.getResult().isEmpty()) {
+                                            QueryDocumentSnapshot shoeDoc = (QueryDocumentSnapshot) t.getResult().getDocuments().get(0);
+                                            Double m = shoeDoc.getDouble("multiplier");
+                                            Long l = shoeDoc.getLong("tier");
+                                            if (m != null) tempItems.get(i).multiplier = m;
+                                            if (l != null) tempItems.get(i).level = l.intValue();
+                                        }
+                                    }
+
+                                    Collections.sort(tempItems, (o1, o2) -> Double.compare(o2.multiplier, o1.multiplier));
+                                    for (int i = 0; i < tempItems.size(); i++) {
+                                        tempItems.get(i).rank = i + 1;
+                                    }
+
+                                    updateAdapter(tempItems);
+                                });
+                            }
+                        }
+                    });
+        }
+    }
+
     private void fetchTrainees(Long coachId) {
         if (coachId == null) return;
 
@@ -259,13 +478,11 @@ public class LeaderBoardActivity extends AppCompatActivity{
                         String city = "Unknown";
                         String profileImageUrl = doc.getString("profileImageUrl");
 
-                        // Create placeholder item (rank/level/multiplier filled in below)
                         LeaderboardAdapter.LeaderboardItem item =
                                 new LeaderboardAdapter.LeaderboardItem(
                                         userId, name, 0, 1, 1.0, city, profileImageUrl);
                         tempItems.add(item);
 
-                        // Fetch inventory for this user to find best shoe
                         Task<QuerySnapshot> task = db.collection("users").document(userId).collection("inventory")
                                 .orderBy("multiplier", Query.Direction.DESCENDING)
                                 .limit(1)
@@ -290,10 +507,8 @@ public class LeaderBoardActivity extends AppCompatActivity{
                             }
                         }
 
-                        // Sort by Multiplier Descending
                         Collections.sort(tempItems, (o1, o2) -> Double.compare(o2.multiplier, o1.multiplier));
 
-                        // Assign Ranks
                         for (int i = 0; i < tempItems.size(); i++) {
                             tempItems.get(i).rank = i + 1;
                         }
@@ -316,7 +531,7 @@ public class LeaderBoardActivity extends AppCompatActivity{
                 .setTitle("Mark Attendance for " + name)
                 .setMessage("Award coins for attendance?")
                 .setPositiveButton("Award 50 Coins", (dialog, which) -> {
-                     awardCoins(traineeId, 50);
+                    awardCoins(traineeId, 50);
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
