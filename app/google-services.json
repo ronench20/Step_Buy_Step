@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "708121407268-bj7hrplhm3mglmrs8h6unmvs03racnni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stepbuystep",
+            "certificate_hash": "d3d4967bd8a08f7aee7b3f3f2602177b85f0a7d0"
+          }
+        },
+        {
           "client_id": "708121407268-qjam7km9itr46r6bk2gono70o24usfh5.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -37,7 +37,9 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,7 +106,8 @@ public class TraineeHomeActivity extends BaseTraineeActivity
 
         auth    = FirebaseAuth.getInstance();
         db      = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
+        // Explicitly initialize with bucket URL to resolve 404/Not Found issues
+        storage = FirebaseStorage.getInstance("gs://step-but-step.firebasestorage.app");
 
         initViews();
         setupNavigationBar(NavItem.DASHBOARD);
@@ -208,35 +211,58 @@ public class TraineeHomeActivity extends BaseTraineeActivity
     /** Show preview + upload to Storage + persist URL in Firestore. */
     private void handlePickedImage(@NonNull Uri uri) {
         String uid = auth.getUid();
-        if (uid == null) return;
+        if (uid == null) {
+            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Immediate preview using Glide (no re-decode cost in memory).
         Glide.with(this).load(uri).circleCrop().into(ivDashProfilePic);
 
         StorageReference ref = storage.getReference()
-                .child("profile_pictures/" + uid + ".jpg");
+                .child("profile_pictures/" + uid);
 
-        ref.putFile(uri)
+        Log.d(TAG, "Uploading profile picture to: " + ref.getPath());
+
+        // Use metadata to specify content type, which helps avoid "terminated session" errors.
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("image/jpeg")
+                .build();
+
+        ref.putFile(uri, metadata)
                 .continueWithTask(task -> {
-                    if (!task.isSuccessful() && task.getException() != null) {
-                        throw task.getException();
+                    if (!task.isSuccessful()) {
+                        if (task.getException() != null) {
+                            throw task.getException();
+                        }
+                        throw new Exception("Unknown upload error");
                     }
                     return ref.getDownloadUrl();
                 })
                 .addOnSuccessListener(downloadUri -> {
                     String url = downloadUri.toString();
+                    Log.d(TAG, "Upload success, URL: " + url);
                     db.collection("users").document(uid)
                             .update("profileImageUrl", url)
                             .addOnSuccessListener(u ->
                                     Toast.makeText(this, "Profile picture updated",
                                             Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Toast.makeText(this,
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "Failed to update Firestore with URL", e);
+                                Toast.makeText(this,
                                     "Couldn't save URL: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show());
+                                    Toast.LENGTH_LONG).show();
+                            });
                 })
-                .addOnFailureListener(e -> Toast.makeText(this,
-                        "Upload failed: " + e.getMessage(),
-                        Toast.LENGTH_LONG).show());
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Storage upload failed", e);
+                    // 404 often means bucket not found/initialized or project mismatch
+                    String errorMsg = e.getMessage();
+                    if (errorMsg != null && errorMsg.contains("404")) {
+                        errorMsg = "Storage bucket not found (404). Please check Firebase Console.";
+                    }
+                    Toast.makeText(this, "Upload failed: " + errorMsg, Toast.LENGTH_LONG).show();
+                });
     }
 
     // ------------------------------ Loaders -----------------------------
