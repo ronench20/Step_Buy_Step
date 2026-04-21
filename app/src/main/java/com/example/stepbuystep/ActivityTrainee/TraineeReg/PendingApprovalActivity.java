@@ -1,10 +1,11 @@
 package com.example.stepbuystep.ActivityTrainee.TraineeReg;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+//import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,11 +89,10 @@ public class PendingApprovalActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error checking status", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Error checking status", Toast.LENGTH_SHORT).show());
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateUIForPending() {
         ivStatusIcon.setImageResource(R.drawable.ic_pending);
         ivStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.brand_blue));
@@ -106,19 +106,20 @@ public class PendingApprovalActivity extends AppCompatActivity {
         btnRefresh.setVisibility(View.VISIBLE);
     }
 
-    private void updateUIForRejected() {
-        ivStatusIcon.setImageResource(R.drawable.ic_close);
-        ivStatusIcon.setColorFilter(ContextCompat. getColor(this, R.color.brand_red));
-
-        tvStatusTitle.setText("Request Rejected");
-        tvStatusTitle.setTextColor(ContextCompat.getColor(this, R.color.brand_red));
-
-        tvStatusMessage.setText("Your registration request was rejected by the coach.");
-        tvStatusSubMessage.setText("Please contact your coach for more information.");
-
-        btnRefresh.setVisibility(View.GONE);
-
-    }
+//    @SuppressLint("SetTextI18n")
+//    private void updateUIForRejected() {
+//        ivStatusIcon.setImageResource(R.drawable.ic_close);
+//        ivStatusIcon.setColorFilter(ContextCompat. getColor(this, R.color.brand_red));
+//
+//        tvStatusTitle.setText("Request Rejected");
+//        tvStatusTitle.setTextColor(ContextCompat.getColor(this, R.color.brand_red));
+//
+//        tvStatusMessage.setText("Your registration request was rejected by the coach.");
+//        tvStatusSubMessage.setText("Please contact your coach for more information.");
+//
+//        btnRefresh.setVisibility(View.GONE);
+//
+//    }
 
     @Override
     protected void onResume() {

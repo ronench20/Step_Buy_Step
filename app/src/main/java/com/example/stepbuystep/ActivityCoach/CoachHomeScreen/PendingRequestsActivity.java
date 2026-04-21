@@ -145,8 +145,12 @@ public class PendingRequestsActivity extends AppCompatActivity {
                             String gender = doc.getString("gender");
                             if (gender == null) gender = "Unknown";
 
+                            // Profile image URL written during trainee registration.
+                            // Null/empty => the adapter falls back to initials.
+                            String profileImageUrl = doc.getString("profileImageUrl");
+
                             requests.add(new PendingRequestsAdapter.PendingRequest(
-                                    userId, name, email, city, age, gender
+                                    userId, name, email, city, age, gender, profileImageUrl
                             ));
                         }
 

@@ -129,8 +129,12 @@ public class ManageTeamMembersActivity extends AppCompatActivity {
                             String city = doc.getString("city");
                             if (city == null) city = "Unknown";
 
+                            // Profile image URL written during trainee registration /
+                            // dashboard edits. Null/empty => the adapter falls back to initials.
+                            String profileImageUrl = doc.getString("profileImageUrl");
+
                             members.add(new TeamMembersAdapter.TeamMember(
-                                    userId, name, email, city
+                                    userId, name, email, city, profileImageUrl
                             ));
                         }
 

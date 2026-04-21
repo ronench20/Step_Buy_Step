@@ -224,7 +224,12 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
                     // Send automatic notifications to selected trainees
                     sendWorkoutNotifications(type, date, time, location, traineeIds);
 
+                    // Reset the form (in case the user doesn't navigate away) and
+                    // finish back to CoachHome so the newly-saved workout appears
+                    // in the "Upcoming Workouts" card immediately — the dashboard's
+                    // snapshot listener picks it up as we return.
                     clearForm();
+                    finish();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error:  " + e.getMessage(), Toast.LENGTH_SHORT).show()

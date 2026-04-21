@@ -58,20 +58,64 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:padding="24dp"
                     android:background="@drawable/bg_card">
 
-                    <TextView
-                        android:id="@+id/avatar"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:gravity="center"
-                        android:text="R"
-                        android:textColor="@android:color/white"
-                        android:textStyle="bold"
-                        android:textSize="24sp"
-                        android:background="@drawable/bg_avatar_gradient"
-                        android:elevation="6dp"/>
+                    <!--
+                      Profile picture chooser.
+                      - avatar TextView stays as the initials fallback (visible when the
+                        user has no profileImageUrl yet).
+                      - ivCoachProfilePic sits on top and is toggled VISIBLE after Glide
+                        loads the Firebase Storage URL.
+                      - btnChangeCoachPhoto is a small camera overlay at bottom-end that
+                        triggers the ProfilePicturePickerBottomSheet.
+                    -->
+                    <FrameLayout
+                        android:layout_width="72dp"
+                        android:layout_height="72dp">
+
+                        <TextView
+                            android:id="@+id/avatar"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="R"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:textSize="24sp"
+                            android:background="@drawable/bg_avatar_gradient"
+                            android:elevation="6dp"/>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCoachProfilePic"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_gravity="center"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:contentDescription="Profile picture"
+                            android:elevation="6dp"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            app:shapeAppearanceOverlay="@style/CircleImage"
+                            app:strokeColor="@android:color/white"
+                            app:strokeWidth="2dp"/>
+
+                        <ImageView
+                            android:id="@+id/btnChangeCoachPhoto"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="bottom|end"
+                            android:background="@android:color/white"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:contentDescription="Change photo"
+                            android:elevation="8dp"
+                            android:padding="4dp"
+                            android:src="@android:drawable/ic_menu_camera"/>
+                    </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"

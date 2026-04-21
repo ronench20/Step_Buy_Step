@@ -14,17 +14,33 @@
         android:padding="16dp"
         android:gravity="center_vertical">
 
-        <!-- Avatar/Initial Circle -->
-        <TextView
-            android:id="@+id/tvInitial"
+        <!-- Avatar. tvInitial is the initials fallback shown when the member has no
+             profileImageUrl; ivMemberAvatar sits on top and is revealed by the adapter
+             once Glide finishes loading the Firebase Storage URL. -->
+        <FrameLayout
             android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/badge_circle"
-            android:gravity="center"
-            android:text="A"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/tvInitial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_avatar_gradient_circle"
+                android:gravity="center"
+                android:text="A"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivMemberAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Member photo"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/CircleImage" />
+        </FrameLayout>
 
         <!-- Trainee Info -->
         <LinearLayout

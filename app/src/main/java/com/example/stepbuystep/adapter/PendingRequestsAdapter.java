@@ -1,5 +1,6 @@
 package com.example.stepbuystep.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.stepbuystep.R;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +26,23 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
         public String city;
         public int age;
         public String gender;
+        /** Optional Firebase Storage URL for the trainee's profile picture. */
+        public String profileImageUrl;
 
-        public PendingRequest(String userId, String name, String email, String city, int age, String gender) {
+        public PendingRequest(String userId, String name, String email, String city,
+                              int age, String gender) {
+            this(userId, name, email, city, age, gender, null);
+        }
+
+        public PendingRequest(String userId, String name, String email, String city,
+                              int age, String gender, String profileImageUrl) {
             this.userId = userId;
             this.name = name;
             this.email = email;
             this.city = city;
             this.age = age;
             this.gender = gender;
+            this.profileImageUrl = profileImageUrl;
         }
     }
 
@@ -73,9 +85,24 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PendingRequest request = requests. get(position);
 
-        // Set initial (first letter of name)
-        String initial = request.name.length() > 0 ? request.name.substring(0, 1).toUpperCase() : "? ";
+        // Initials are always written so they show while Glide is loading AND as a
+        // fallback when the trainee has no profileImageUrl.
+        String initial = (request.name != null && !request.name.isEmpty())
+                ? request.name.substring(0, 1).toUpperCase()
+                : "?";
         holder.tvInitial.setText(initial);
+
+        // Flip between image and initial based on whether a URL is available.
+        if (!TextUtils.isEmpty(request.profileImageUrl)) {
+            holder.ivAvatar.setVisibility(View.VISIBLE);
+            Glide.with(holder.itemView.getContext())
+                    .load(request.profileImageUrl)
+                    .circleCrop()
+                    .into(holder.ivAvatar);
+        } else {
+            holder.ivAvatar.setVisibility(View.GONE);
+            Glide.with(holder.itemView.getContext()).clear(holder.ivAvatar);
+        }
 
         holder.tvTraineeName.setText(request.name);
         holder.tvTraineeEmail.setText(request.email);
@@ -105,6 +132,7 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvInitial;
+        ShapeableImageView ivAvatar;
         TextView tvTraineeName;
         TextView tvTraineeEmail;
         TextView tvTraineeCity;
@@ -116,6 +144,7 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvInitial = itemView. findViewById(R.id.tvInitial);
+            ivAvatar = itemView.findViewById(R.id.ivRequestAvatar);
             tvTraineeName = itemView.findViewById(R. id.tvTraineeName);
             tvTraineeEmail = itemView.findViewById(R.id. tvTraineeEmail);
             tvTraineeCity = itemView.findViewById(R.id.tvTraineeCity);
