@@ -77,7 +77,10 @@ public class PendingApprovalActivity extends AppCompatActivity {
                             finish();
                         } else if ("rejected".equals(status)) {
                             // Rejected - update UI
-                            updateUIForRejected();
+                            //updateUIForRejected();
+                            Toast.makeText(this, "Your account has been rejected.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(this, RequestRejectedActivity.class));
+                            finish();
                         } else {
                             // Still pending - update UI
                             updateUIForPending();
@@ -114,6 +117,7 @@ public class PendingApprovalActivity extends AppCompatActivity {
         tvStatusSubMessage.setText("Please contact your coach for more information.");
 
         btnRefresh.setVisibility(View.GONE);
+
     }
 
     @Override

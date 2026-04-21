@@ -93,6 +93,10 @@
             android:name=".ActivityTrainee.TraineeReg.PendingApprovalActivity"
             android:exported="false" />
         <activity
+            android:name=".ActivityTrainee.TraineeReg.RequestRejectedActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ActivityTrainee.TraineeReg.ReEnterCoachIdActivity"
             android:exported="false" />
         <activity

@@ -3,6 +3,7 @@ package com.example.stepbuystep.ActivityTrainee.TraineeReg;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -23,7 +24,7 @@ public class ReEnterCoachIdActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private EditText etNewCoachId;
-    private LinearLayout btnSubmitNewCoachId;
+    private Button btnSubmitNewCoachId;
     private LinearLayout btnLogout;
 
     @Override
