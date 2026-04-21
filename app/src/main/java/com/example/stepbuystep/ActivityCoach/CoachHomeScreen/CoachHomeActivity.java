@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget. TextView;
 import android.widget. Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +20,7 @@ import com.example.stepbuystep.ActivityCommon.LeaderBoardActivity;
 import com.example.stepbuystep.ActivityCommon.LoginActivity;
 import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.UpcomingWorkoutAdapter;
+import com.example.stepbuystep.adapter.WorkoutAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -27,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -52,14 +55,11 @@ public class CoachHomeActivity extends BaseCoachActivity {
     private LinearLayout btnCopyCoachId;
     private LinearLayout btnBroadcastMessage;
     private LinearLayout btnLogout;
-    private RecyclerView rvUpcoming;
-    private View cardNoUpcoming;
-
     private long coachIdValue = 0;
-    private UpcomingWorkoutAdapter upcomingAdapter;
 
     /** Live listener on the coach's workouts. Attached in onStart, detached in onStop. */
     private ListenerRegistration upcomingWorkoutsReg;
+    private final List<WorkoutAdapter.WorkoutItem> workouts = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,6 @@ public class CoachHomeActivity extends BaseCoachActivity {
 
         initViews();
         setupNavigationBar(BaseCoachActivity.NavItem.DASH_COACH);
-        setupRecyclerView();
         setupListeners();
         fetchCoachData();
     }
@@ -88,15 +87,14 @@ public class CoachHomeActivity extends BaseCoachActivity {
         btnCopyCoachId = findViewById(R.id.btnCopyCoachId);
         btnBroadcastMessage = findViewById(R.id.btnBroadcastMessage);
         btnLogout = findViewById(R. id.btnLogout);
-        rvUpcoming = findViewById(R.id.rvUpcoming);
-        cardNoUpcoming = findViewById(R.id.cardNoUpcoming);
+        badgeUpcomingCount= findViewById(R.id.badgeUpcomingCount);
     }
 
-    private void setupRecyclerView() {
-        upcomingAdapter = new UpcomingWorkoutAdapter();
-        rvUpcoming.setLayoutManager(new LinearLayoutManager(this));
-        rvUpcoming.setAdapter(upcomingAdapter);
-    }
+//    private void setupRecyclerView() {
+//        upcomingAdapter = new UpcomingWorkoutAdapter();
+//        rvUpcoming.setLayoutManager(new LinearLayoutManager(this));
+//        rvUpcoming.setAdapter(upcomingAdapter);
+//    }
 
     private void setupListeners() {
         btnLogout.setOnClickListener(v -> {
@@ -123,6 +121,7 @@ public class CoachHomeActivity extends BaseCoachActivity {
         cardPendingRequests.setOnClickListener(v ->
                 startActivity(new Intent(this, PendingRequestsActivity.class))
         );
+        badgeUpcomingCount.setOnClickListener(v -> showUpcomingWorkoutsDialog());
     }
 
     private void showBroadcastDialog() {
@@ -185,7 +184,10 @@ public class CoachHomeActivity extends BaseCoachActivity {
                 });
     }
 
-
+    private void showUpcomingWorkoutsDialog() {
+        UpcomingWorkoutDialog.newInstance(new ArrayList<>(workouts))
+                .show(getSupportFragmentManager(), "UpcomingWorkoutsDialog");
+    }
 
     /**
      * Real-time Upcoming Workouts feed.
@@ -265,30 +267,16 @@ public class CoachHomeActivity extends BaseCoachActivity {
                     // Sort soonest-first by zipping items with their parsed millis.
                     List<Integer> indices = new ArrayList<>();
                     for (int i = 0; i < items.size(); i++) indices.add(i);
-                    Collections.sort(indices, new Comparator<Integer>() {
-                        @Override public int compare(Integer a, Integer b) {
-                            return Long.compare(sortKeys.get(a), sortKeys.get(b));
-                        }
-                    });
+                    Collections.sort(indices, (a, b) -> Long.compare(sortKeys.get(a), sortKeys.get(b)));
 
-                    List<UpcomingWorkoutAdapter.WorkoutItem> sorted = new ArrayList<>();
-                    for (int i = 0; i < Math.min(indices.size(), UPCOMING_LIMIT); i++) {
-                        sorted.add(items.get(indices.get(i)));
+                    // Update the class-level workouts list with ALL upcoming workouts for the dialog
+                    workouts.clear();
+                    for (int i : indices) {
+                        UpcomingWorkoutAdapter.WorkoutItem item = items.get(i);
+                        workouts.add(new WorkoutAdapter.WorkoutItem(item.type, item.date, item.time, item.location));
                     }
 
-                    if (sorted.isEmpty()) {
-                        rvUpcoming.setVisibility(View.GONE);
-                        cardNoUpcoming.setVisibility(View.VISIBLE);
-                        badgeUpcomingCount.setText("0");
-                        upcomingAdapter.setItems(new ArrayList<>());
-                    } else {
-                        rvUpcoming.setVisibility(View.VISIBLE);
-                        cardNoUpcoming.setVisibility(View.GONE);
-                        // Badge reflects the FULL number of upcoming workouts, not just
-                        // the 3 we render in the preview card.
-                        badgeUpcomingCount.setText(String.valueOf(items.size()));
-                        upcomingAdapter.setItems(sorted);
-                    }
+                    badgeUpcomingCount.setText(String.valueOf(items.size()));
                 });
     }
 

@@ -92,7 +92,6 @@ public class HistoryTraineeActivity extends BaseTraineeActivity {
 
         db.collection("training_history")
                 .whereEqualTo("userId", uid)
-                .orderBy("timestamp", Query.Direction. DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<HistoryItem> items = new ArrayList<>();
@@ -106,7 +105,7 @@ public class HistoryTraineeActivity extends BaseTraineeActivity {
                         Double dist = doc.getDouble("distance");
                         Long steps = doc.getLong("steps");
                         String date = doc.getString("date");
-                        Long timestamp = doc. getLong("timestamp");
+                        Long timestamp = doc.getLong("timestamp");
 
                         if (type == null) type = "Workout";
                         if (dist == null) dist = 0.0;
@@ -122,7 +121,7 @@ public class HistoryTraineeActivity extends BaseTraineeActivity {
                         String subtitle = String.format("%.2f km • %d steps", dist, steps);
                         String iconType = type.toLowerCase().contains("run") ? "run" : "walk";
 
-                        items. add(new HistoryItem(doc.getId(), type, subtitle, date, timestamp, iconType));
+                        items.add(new HistoryItem(doc.getId(), type, subtitle, date, timestamp, iconType));
                     }
 
                     fetchPastScheduledWorkouts(uid, items, count, totalDist, totalCalories, totalPoints);

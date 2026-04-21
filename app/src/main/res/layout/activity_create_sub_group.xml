@@ -13,7 +13,7 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="@color/white">
+        android:background="@color/brand_blue">
 
         <LinearLayout
             android:id="@+id/btnBack"
@@ -69,19 +69,19 @@
                 android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp" />
 
+            <!-- Select Trainees Section -->
             <EditText
                 android:id="@+id/etSubGroupName"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
+                android:background="@drawable/bg_edittext"
                 android:hint="e.g., Running Team, Morning Group"
                 android:inputType="text"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
-                android:background="@drawable/bg_edittext"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_muted" />
 
-            <!-- Select Trainees Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
             android:text="Create Sub-Group"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_button_blue"
+            android:background="@color/brand_blue"
             android:textColor="@color/white" />
     </LinearLayout>
 

@@ -244,6 +244,8 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
         // Get coach name first
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(coachDoc -> {
+                    if (!coachDoc.exists()) return;
+                    
                     String coachEmail = coachDoc.getString("email");
                     String coachName = (coachEmail != null) ? coachEmail.split("@")[0] : "Coach";
                     if (coachName.length() > 0) {
@@ -252,19 +254,18 @@ public class CreateWorkoutActivity extends BaseCoachActivity {
 
                     // Create notification message text
                     String messageText = String.format(
-                            "New workout scheduled!\n\nType: %s\nDate: %s\nTime:  %s\nLocation: %s",
+                            "New workout scheduled!\n\nType: %s\nDate: %s\nTime: %s\nLocation: %s",
                             type, date, time, location
                     );
 
-                    String finalCoachName = coachName;
                     // Send message to each selected trainee
                     for (String traineeId : traineeIds) {
                         Map<String, Object> message = new HashMap<>();
                         message.put("coachId", uid);
-                        message. put("coachName", finalCoachName);
+                        message.put("coachName", coachName);
                         message.put("traineeId", traineeId);
                         message.put("messageText", messageText);
-                        message.put("timestamp", com.google.firebase.Timestamp. now());
+                        message.put("timestamp", com.google.firebase.Timestamp.now());
                         message.put("isRead", false);
 
                         db.collection("messages")
