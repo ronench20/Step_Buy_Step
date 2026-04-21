@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.stepbuystep.ActivityCommon.NotificationManager;
 import com.example.stepbuystep.R;
 import com.example.stepbuystep.adapter.SelectTraineesAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -155,16 +156,14 @@ public class CreateSubGroupActivity extends AppCompatActivity {
                 .add(subGroupData)
                 .addOnSuccessListener(documentReference -> {
                     String subGroupId = documentReference.getId();
-
-                    // Now add this sub-group ID to each trainee's subgroups array
-                    addSubGroupToTrainees(selectedTraineeIds, subGroupId);
+                    addSubGroupToTrainees(selectedTraineeIds, subGroupId, subGroupName);  // Pass subGroupName
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error creating sub-group: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void addSubGroupToTrainees(List<String> traineeIds, String subGroupId) {
+    private void addSubGroupToTrainees(List<String> traineeIds, String subGroupId, String subGroupName) {
         // For each trainee, add the subGroupId to their subgroups array
         for (String traineeId : traineeIds) {
             db.collection("users").document(traineeId)
@@ -177,11 +176,29 @@ public class CreateSubGroupActivity extends AppCompatActivity {
                     });
         }
 
-        // After all updates, show success and close
+        // Send notifications to all selected trainees
+        String coachName = auth.getCurrentUser().getEmail();
+        if (coachName != null && coachName.contains("@")) {
+            coachName = coachName.split("@")[0]; // Get name before @
+            if (coachName.length() > 0) {
+                coachName = coachName.substring(0, 1).toUpperCase() + coachName.substring(1);
+            }
+        }
+
+        NotificationManager notificationManager = new NotificationManager();
+        notificationManager.notifyTraineesOnSubGroupCreation(subGroupName, traineeIds, coachName,
+                (success, message) -> {
+                    if (success) {
+                        Toast.makeText(CreateSubGroupActivity.this, message, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(CreateSubGroupActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // Show success and close
         Toast.makeText(this, "Sub-group created successfully!", Toast.LENGTH_SHORT).show();
         finish();
     }
-
     // Simple data class to hold trainee info for selection
     public static class TraineeForSelection {
         public String id;

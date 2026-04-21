@@ -3,6 +3,7 @@ package com.example.stepbuystep.ActivityCommon;
 import com.example.stepbuystep.model.ShoeLevel;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class NotificationManager {
@@ -75,6 +76,41 @@ public class NotificationManager {
                             .addOnFailureListener(e -> listener.onComplete(false, e.getMessage()));
                 })
                 .addOnFailureListener(e -> listener.onComplete(false, e.getMessage()));
+    }
+
+    /**
+     * Send message to trainees when they are added to a sub-group
+     * @param subGroupName The name of the sub-group
+     * @param traineeIds List of trainee UIDs to notify
+     * @param coachName The name of the coach creating the sub-group
+     */
+    public void notifyTraineesOnSubGroupCreation(String subGroupName, List<String> traineeIds,
+                                                 String coachName, OnCompleteListener listener) {
+        int messageCount = 0;
+
+        for (String traineeId : traineeIds) {
+            // Create message for each trainee
+            Map<String, Object> message = new HashMap<>();
+            message.put("traineeId", traineeId);
+            message.put("coachName", coachName);
+            message.put("messageText", "You have been added to the sub-group: \"" + subGroupName + "\"");
+            message.put("timestamp", com.google.firebase.Timestamp.now());  // <-- USE Firestore Timestamp
+            message.put("isRead", false);
+
+            // Add to messages collection
+            db.collection("messages")
+                    .add(message)
+                    .addOnSuccessListener(documentReference -> {
+                        // Message added successfully
+                    })
+                    .addOnFailureListener(e -> {
+                        // Log error but continue with other trainees
+                    });
+
+            messageCount++;
+        }
+
+        listener.onComplete(true, "Message sent to " + messageCount + " trainees");
     }
 
     public interface OnCompleteListener {
