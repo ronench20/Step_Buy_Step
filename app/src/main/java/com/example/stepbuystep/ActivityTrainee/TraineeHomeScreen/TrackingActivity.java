@@ -33,6 +33,7 @@ public class TrackingActivity extends ComponentActivity {
 
     private TrackingService trackingService;
     private boolean isBound = false;
+    private boolean sessionActive = false; // tracks whether a session is in progress
 
     private TextView tvStats, tvEquipmentInfo;
     private Button btnStart, btnStop;
@@ -64,6 +65,11 @@ public class TrackingActivity extends ComponentActivity {
             TrackingService.LocalBinder binder = (TrackingService.LocalBinder) service;
             trackingService = binder.getService();
             isBound = true;
+            // If START was pressed before the service finished binding, begin tracking now
+            if (sessionActive) {
+                trackingService.startTracking();
+                handler.post(updateStatsRunnable);
+            }
         }
 
         @Override
@@ -174,6 +180,11 @@ public class TrackingActivity extends ComponentActivity {
     }
 
     private void startSession() {
+        // Immediately lock the UI into Screen B so no race condition can revert it
+        sessionActive = true;
+        btnStart.setVisibility(View.GONE);
+        btnStop.setVisibility(View.VISIBLE);
+
         // Start Foreground Service
         Intent intent = new Intent(this, TrackingService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -182,11 +193,11 @@ public class TrackingActivity extends ComponentActivity {
             startService(intent);
         }
 
+        // If the service is already bound, start tracking immediately.
+        // Otherwise onServiceConnected (above) will start it once binding completes.
         if (!isBound || trackingService == null) return;
 
         trackingService.startTracking();
-        btnStart.setVisibility(View.GONE);
-        btnStop.setVisibility(View.VISIBLE);
         //rgActivityType.setEnabled(false);
         handler.post(updateStatsRunnable);
     }
@@ -194,28 +205,35 @@ public class TrackingActivity extends ComponentActivity {
     private void stopSession() {
         if (!isBound || trackingService == null) return;
 
+        sessionActive = false;
         double distance = trackingService.getDistance();
+        int steps = trackingService.getSteps(); // capture before stopping
         trackingService.stopTracking();
         handler.removeCallbacks(updateStatsRunnable);
 
         long earnedCoins = (long) (distance * currentMultiplier);
 
-        // Update DB
+        // Update DB — always save the session regardless of distance or coin amount
         String uid = auth.getUid();
-        if (uid != null && earnedCoins > 0) {
-            // Update Coin Balance
-            db.collection("users").document(uid)
-                    .update("coin_balance", com.google.firebase.firestore.FieldValue.increment(earnedCoins))
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Earned " + earnedCoins + " coins!", Toast.LENGTH_LONG).show();
-                        saveSessionToHistory(uid, distance, trackingService.getSteps(), earnedCoins);
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Error saving coins", Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
+        if (uid != null) {
+            if (earnedCoins > 0) {
+                // Update Coin Balance
+                db.collection("users").document(uid)
+                        .update("coin_balance", com.google.firebase.firestore.FieldValue.increment(earnedCoins))
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Earned " + earnedCoins + " coins!", Toast.LENGTH_LONG).show();
+                            saveSessionToHistory(uid, distance, steps, earnedCoins);
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Error saving coins", Toast.LENGTH_SHORT).show();
+                            finish();
+                        });
+            } else {
+                // No coins earned but session is still valid — save it
+                Toast.makeText(this, "Session saved!", Toast.LENGTH_SHORT).show();
+                saveSessionToHistory(uid, distance, steps, earnedCoins);
+            }
         } else {
-            Toast.makeText(this, "Session ended. Distance too short.", Toast.LENGTH_SHORT).show();
             finish();
         }
     }

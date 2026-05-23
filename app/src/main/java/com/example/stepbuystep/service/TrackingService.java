@@ -103,7 +103,9 @@ public class TrackingService extends Service implements SensorEventListener {
                 if (locationResult == null) return;
                 for (Location location : locationResult.getLocations()) {
                     if (lastLocation != null) {
-                        totalDistance += lastLocation.distanceTo(location) / 1000.0; // Convert to KM
+                        double addedDistance = lastLocation.distanceTo(location) / 1000.0; // Convert to KM
+                        totalDistance += addedDistance;
+                        currentSteps += (int) (addedDistance * 130);
                     }
                     lastLocation = location;
                     updateNotification(String.format("Dist: %.2f km | Steps: %d", totalDistance, currentSteps));
