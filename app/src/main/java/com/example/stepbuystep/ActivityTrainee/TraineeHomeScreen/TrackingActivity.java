@@ -53,7 +53,8 @@ public class TrackingActivity extends ComponentActivity {
             if (isBound && trackingService != null) {
                 double dist = trackingService.getDistance();
                 int steps = trackingService.getSteps();
-                tvStats.setText(String.format("Distance: %.2f km\nSteps: %d", dist, steps));
+                tvStats.setText(String.format("%.2f km\nSteps: %d", dist, steps));
+//                tvStats.setText(String.format("Distance: %.2f km\nSteps: %d", dist, steps));
             }
             handler.postDelayed(this, 1000);
         }
